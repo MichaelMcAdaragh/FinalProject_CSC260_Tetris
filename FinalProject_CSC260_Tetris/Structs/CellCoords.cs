@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FinalProject_CSC260_Tetris
 {
-    public struct BlockCoords
+    public struct CellCoords
     {
         public int x;
         public int y;

@@ -1,4 +1,4 @@
-﻿namespace FinalProject_CSC260_Tetris
+﻿namespace FinalProject_CSC260_Tetris.Main
 {
     internal class Program
     {

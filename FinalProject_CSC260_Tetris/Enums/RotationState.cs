@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FinalProject_CSC260_Tetris
 {
-    public enum RotationalState
+    public enum RotationState
     {
         Deg000,             // 0
         Deg090,             // 1
