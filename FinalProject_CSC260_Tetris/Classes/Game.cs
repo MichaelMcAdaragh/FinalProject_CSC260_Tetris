@@ -12,7 +12,7 @@ namespace FinalProject_CSC260_Tetris
         public int Level { get; private set; } // but can only be modified by Game Class.
 
         // Default Game Constructor
-        Game()
+        public Game()
         {
             Score = 0;
             Level = 0;
@@ -21,12 +21,55 @@ namespace FinalProject_CSC260_Tetris
         }
 
         // Game Methods
-        
+
         // void ClearGameBoard(CellColor[,] matrix)
         // Clear Game Board for New Game.
 
         // void DisplayGameBoard(CellColor[,] matrix, int score, int level)
         // Display Game Board.
+
+        // DisplayGameBoard() method. (TERMINAL TEST PRINT)
+        public void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
+        {
+            Console.WriteLine("\n\n\n----------SCORE: 000000----------");
+            Console.WriteLine("-.--.--.--.--.--.--.--.--.--.--.-");
+            for (int i = 0; i < GameSettings.Height; i++)
+            {
+                Console.Write("|");
+                for (int j = 0; j < GameSettings.Width; j++)
+                {
+                    switch ((CellColor)matrix[j, i])
+                    {
+                        case CellColor.Empty:
+                            Console.Write(".  ");
+                            break;
+                        case CellColor.Cyan:
+                            Console.Write(".CC");
+                            break;
+                        case CellColor.Yellow:
+                            Console.Write(".YY");
+                            break;
+                        case CellColor.Purple:
+                            Console.Write(".PP");
+                            break;
+                        case CellColor.Green:
+                            Console.Write(".GG");
+                            break;
+                        case CellColor.Red:
+                            Console.Write(".RR");
+                            break;
+                        case CellColor.Blue:
+                            Console.Write(".BB");
+                            break;
+                        case CellColor.Orange:
+                            Console.Write(".OO");
+                            break;
+                    }
+                }
+                Console.WriteLine(".|");
+            }
+            Console.WriteLine("---------------------------------");
+        }
 
         // private void _spawnRandomTetromino(CellColor[,] matrix)
         // Spawn a Random New Tetromino at the Center of the Game Board.
