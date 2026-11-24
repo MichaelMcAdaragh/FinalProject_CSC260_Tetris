@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Raylib_cs;
 
 namespace FinalProject_CSC260_Tetris
 {
@@ -22,6 +24,7 @@ namespace FinalProject_CSC260_Tetris
             Level = 0;
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
+            _spawnRandomTetromino();
         }
 
         // Game Methods
@@ -29,10 +32,53 @@ namespace FinalProject_CSC260_Tetris
         // void ClearGameBoard(CellColor[,] matrix)
         // Clear Game Board for New Game.
 
+
+        // private Color _toRayLibColor(Cellcolor color)
+        // convert enum color from the logic into a raylib compatable color.
+        private Color _toRayLibColor(CellColor color)
+        {
+            return color switch                                   // Cool switch syntax!!!
+            {
+                CellColor.Empty => Color.Black,
+                CellColor.Cyan => new Color(0, 255, 255, 255),    // Custom Cyan Color
+                CellColor.Yellow => Color.Yellow,
+                CellColor.Purple => Color.Purple,
+                CellColor.Green => Color.Green,
+                CellColor.Red => Color.Red,
+                CellColor.Blue => Color.Blue,
+                CellColor.Orange => Color.Orange,
+                _ => Color.Black
+            };
+        }
+
         // void DisplayGameBoard(CellColor[,] matrix, int score, int level)
         // Display Game Board.
-        // DisplayGameBoard() method. (TERMINAL TEST PRINT)
-        internal void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
+        internal void DisplayGameBoard(CellColor[,] matrix /*, int score, int level*/)  // Runs inside the window's while loop.
+        {
+            for (int row = 0; row<GameSettings.Height; row++)                           // nested for loop is same as terminal print out
+            {
+                for (int col = 0; col<GameSettings.Width; col++)                        // but pixel math instead of ASCII characters.
+                {
+                    Raylib.DrawRectangle(                                               // fills each cell with the correct cell color.
+                    col * GameSettings.CellSize,                                        // calculates current pos X in pixels
+                    row * GameSettings.CellSize,                                        // calculates current pos Y in pixels
+                    GameSettings.CellSize,                                              // rectangle width in pixels
+                    GameSettings.CellSize,                                              // rectangle height in pixels
+                    _toRayLibColor(matrix[col,row]));                                   // !!!! Fills cell with the correct cell color for its position. !!!!
+
+                    Raylib.DrawRectangleLines(                                          // draws a gray rectangle around each cell.
+                    col* GameSettings.CellSize,                                         // calculates current pos X in pixels
+                    row* GameSettings.CellSize,                                         // calculates current pos Y in pixels
+                    GameSettings.CellSize,                                              // rectangle width in pixels
+                    GameSettings.CellSize,                                              // rectangle height in pixels
+                    Color.DarkGray);                                                    // rectangle color DarkGray
+                }
+            }
+        }
+
+// DisplayGameBoard() method. (TERMINAL TEST PRINT)
+/*
+internal void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
         {
             Console.WriteLine("\n\n\n----------SCORE: 000000----------");
             Console.WriteLine("-.--.--.--.--.--.--.--.--.--.--.-");
@@ -73,49 +119,34 @@ namespace FinalProject_CSC260_Tetris
             }
             Console.WriteLine("---------------------------------");
         }
+        */
 
         // private void _spawnRandomTetromino(CellColor[,] matrix)
         // Spawn a Random New Tetromino at the Center of the Game Board.
-        private TetrominoType _getRandomTetraminoType(Random rng)
-        { 
-            return (TetrominoType)_rng.Next(0,7);  // 0 is inclusive, 7 is exclusive  // Currently random nums 0-6 pieces I - L
-        }
-        // private void _spawnRandomTetromino(CellColor[,] matrix)
-        // Spawn a Random New Tetromino at the Center of the Game Board.
-        internal void SpawnRandomTetromino(CellColor[,] matrix)     // NEED TO FINISH //
+        private void _spawnRandomTetromino()     // NEED TO FINISH //
         {
-            switch (_getRandomTetraminoType(_rng))
+            switch ((TetrominoType)_rng.Next(0, 7))
             {
                 case TetrominoType.I:
-                    var i_piece = new I_Piece(matrix);
-                    break;
+                    var i_piece = new I_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.O:
-                    var o_piece = new O_Piece(matrix);
-                    break;
+                    var o_piece = new O_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.T:
-                    var t_piece = new T_Piece(matrix);
-                    break;
+                    var t_piece = new T_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.S:
-                    var s_piece = new S_Piece(matrix);
-                    break;
+                    var s_piece = new S_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.Z:
-                    var z_piece = new Z_Piece(matrix);
-                    break;
+                    var z_piece = new Z_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.J:
-                    var j_piece = new J_Piece(matrix);
-                    break;
+                    var j_piece = new J_Piece(TetrisGameBoard);     break;
 
                 case TetrominoType.L:
-                    var l_piece = new L_Piece(matrix);
-                    break;
-
-                default:    // bad input do nothing.
-                    break;
+                    var l_piece = new L_Piece(TetrisGameBoard);     break;
             }
         }
 
