@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace FinalProject_CSC260_Tetris
 {
-    class Game
+    internal class Game
     {
         // Game Fields & Properties:
         public CellColor[,] TetrisGameBoard;   // Declare Matrix for TetrisGameBoard
+        private Random _rng;                   // Declare variable for local private Random Number Object.
+
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
+        
 
         // Default Game Constructor
         public Game()
         {
-            Score = 0;
+            Score = 0;                                                                  // Score and Level start at Zero.
             Level = 0;
-            TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];
-            // Create New Piece and Start Game Loop???
+            TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
+            _rng = new Random();                                                        // Instantiate pseudorandom number generator.
         }
 
         // Game Methods
@@ -27,9 +31,8 @@ namespace FinalProject_CSC260_Tetris
 
         // void DisplayGameBoard(CellColor[,] matrix, int score, int level)
         // Display Game Board.
-
         // DisplayGameBoard() method. (TERMINAL TEST PRINT)
-        public void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
+        internal void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
         {
             Console.WriteLine("\n\n\n----------SCORE: 000000----------");
             Console.WriteLine("-.--.--.--.--.--.--.--.--.--.--.-");
@@ -73,6 +76,47 @@ namespace FinalProject_CSC260_Tetris
 
         // private void _spawnRandomTetromino(CellColor[,] matrix)
         // Spawn a Random New Tetromino at the Center of the Game Board.
+        private TetrominoType _getRandomTetraminoType(Random rng)
+        { 
+            return (TetrominoType)_rng.Next(1);                     // Currently random num 0-0
+        }
+        internal void SpawnRandomTetromino(CellColor[,] matrix)     // NEED TO FINISH //
+        {
+            switch (_getRandomTetraminoType(_rng))
+            {
+                case TetrominoType.I:
+                    var I_Piece = new I_Piece(matrix);
+                    break;
+
+                case TetrominoType.O:
+                    // var O_Piece = new O_Piece(matrix);
+                    break;
+
+                case TetrominoType.T:
+                    // var T_Piece = new T_Piece(matrix);
+                    break;
+
+                case TetrominoType.S:
+                    // var S_Piece = new S_Piece(matrix);
+                    break;
+
+                case TetrominoType.Z:
+                    // var Z_Piece = new Z_Piece(matrix);
+                    break;
+
+                case TetrominoType.J:
+                    // var J_Piece = new J_Piece(matrix);
+                    break;
+
+                case TetrominoType.L:
+                    // var L_Piece = new L_Piece(matrix);
+                    break;
+
+                default:    // bad input do nothing.
+                    break;
+            }
+        }
+
 
         // private void _lockTetromino(CellColor[,] matrix)
         // Lock Tetromino to the Bottom of the Board or to the Block Beneath it.
