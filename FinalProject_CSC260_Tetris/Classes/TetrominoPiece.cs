@@ -46,7 +46,7 @@ namespace FinalProject_CSC260_Tetris
         // move tetromino left, right, and down.
         protected void ShiftPiecePos(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
         {
-            ClearCells(matrix);              // empty Current Cells 
+            ClearPieceCells(matrix);              // empty Current Cells 
 
             for (int i = 0; i < 4; i++)      // for each tetramino cell
             {
@@ -56,7 +56,7 @@ namespace FinalProject_CSC260_Tetris
             PiecePivot.x += change_x;        // update the x-y pos of pivot
             PiecePivot.y += change_y;
 
-            FillCells(matrix, PieceColor);   // fill cells In at New Position.
+            FillPieceCells(matrix, PieceColor);   // fill cells In at New Position.
         }
 
         // public void Move(CellColor[,] matrix, Direction direction)
@@ -87,7 +87,7 @@ namespace FinalProject_CSC260_Tetris
         // Rotate tetromino clockwise or counterclockwise.
         public void Move(CellColor[,] matrix, RotationalDirection rotationalDirection)
         {
-            ClearCells(matrix);                                            // Clear Piece From Game Board Matrix.
+            ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
 
             for (int i = 0; i < 4; i++)                  
             {   // Trig magic. sin and cos are invisible since they cancel out to 1's and 0's at 90 deg spots on unit circle.
@@ -110,7 +110,7 @@ namespace FinalProject_CSC260_Tetris
                         break;
                 }
             }
-            FillCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
+            FillPieceCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
         }
 
         // protected void Kick(CellColor[,] matrix, RotationState rotationState)
