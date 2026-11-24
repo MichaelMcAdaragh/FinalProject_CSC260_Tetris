@@ -20,14 +20,14 @@ namespace FinalProject_CSC260_Tetris
 
 
 
-        // TetrominoPiece Methods
+        // TetrominoPiece METHODS:
 
         // PIECE MOVEMENT AND MANIPULATION //
 
 
         // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
         // fill current tetromino cells with a desired color.
-        protected void FillCells(CellColor[,] matrix, CellColor color)
+        protected void FillPieceCells(CellColor[,] matrix, CellColor color)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -37,9 +37,9 @@ namespace FinalProject_CSC260_Tetris
 
         // protected void ClearCells(CellColor[,] matrix, CellCoords[] piece)
         // empty current tetromino cells.
-        protected void ClearCells(CellColor[,] matrix)
+        protected void ClearPieceCells(CellColor[,] matrix)
         {
-                FillCells(matrix, CellColor.Empty);   // turn off current cells
+                FillPieceCells(matrix, CellColor.Empty);   // turn off current cells
         }
 
         // protected void ShiftPos(Direction direction)
@@ -115,6 +115,9 @@ namespace FinalProject_CSC260_Tetris
 
         // protected void Kick(CellColor[,] matrix, RotationState rotationState)
         // implement kick table offsets. (Possible a challenging goal.)
+
+
+
 
         // BOUNDS CHECKING & COLLISION //
 
