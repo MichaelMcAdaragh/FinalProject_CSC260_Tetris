@@ -15,18 +15,21 @@ namespace FinalProject_CSC260_Tetris.Main           // Credit Claude on the basi
 
             while (!Raylib.WindowShouldClose())                                                 // while user attempt close window == false.
             {
+                // game.HandleInput();                                                          // (a key down moves piece)
+                // game.Update(Raylib.GetFrameTime());                                          // ("the timer ticks" / drop piece)
+
                 Raylib.BeginDrawing();                                                          // Start Drawing.
                 Raylib.ClearBackground(Color.Black);
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-                game.DisplayGameBoard(game.TetrisGameBoard);
+                game.DisplayGameBoard(game.TetrisGameBoard);                                    // Draw Current Game State.
 
         
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                Raylib.EndDrawing();                                                           // End Drawing.
+                Raylib.EndDrawing();                                                            // End Drawing.
             }
-            Raylib.CloseWindow();                                                              // Terminate the window.           
+            Raylib.CloseWindow();                                                               // Terminate the window.           
         }
     }
 }
