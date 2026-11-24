@@ -78,38 +78,40 @@ namespace FinalProject_CSC260_Tetris
         // Spawn a Random New Tetromino at the Center of the Game Board.
         private TetrominoType _getRandomTetraminoType(Random rng)
         { 
-            return (TetrominoType)_rng.Next(1);                     // Currently random num 0-0
+            return (TetrominoType)_rng.Next(0,7);  // 0 is inclusive, 7 is exclusive  // Currently random nums 0-6 pieces I - L
         }
+        // private void _spawnRandomTetromino(CellColor[,] matrix)
+        // Spawn a Random New Tetromino at the Center of the Game Board.
         internal void SpawnRandomTetromino(CellColor[,] matrix)     // NEED TO FINISH //
         {
             switch (_getRandomTetraminoType(_rng))
             {
                 case TetrominoType.I:
-                    var I_Piece = new I_Piece(matrix);
+                    var i_piece = new I_Piece(matrix);
                     break;
 
                 case TetrominoType.O:
-                    // var O_Piece = new O_Piece(matrix);
+                    var o_piece = new O_Piece(matrix);
                     break;
 
                 case TetrominoType.T:
-                    // var T_Piece = new T_Piece(matrix);
+                    var t_piece = new T_Piece(matrix);
                     break;
 
                 case TetrominoType.S:
-                    // var S_Piece = new S_Piece(matrix);
+                    var s_piece = new S_Piece(matrix);
                     break;
 
                 case TetrominoType.Z:
-                    // var Z_Piece = new Z_Piece(matrix);
+                    var z_piece = new Z_Piece(matrix);
                     break;
 
                 case TetrominoType.J:
-                    // var J_Piece = new J_Piece(matrix);
+                    var j_piece = new J_Piece(matrix);
                     break;
 
                 case TetrominoType.L:
-                    // var L_Piece = new L_Piece(matrix);
+                    var l_piece = new L_Piece(matrix);
                     break;
 
                 default:    // bad input do nothing.
