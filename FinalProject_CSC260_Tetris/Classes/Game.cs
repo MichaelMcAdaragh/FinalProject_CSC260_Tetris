@@ -14,10 +14,9 @@ namespace FinalProject_CSC260_Tetris
         internal CellColor[,] TetrisGameBoard;      // Declare Matrix for TetrisGameBoard
         private TetrominoPiece _currentPiece;       // Declare private variable for the current piece.
         private Random _rng;                        // Declare variable for private Random Number Object.
-        private double _dropTimer;
+        private double _timer;
         private double _timeTillDrop;
-        private double _lockTimer;
-        private double _timeTillLock;
+        //private double _timeTillLock;
 
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
@@ -32,7 +31,7 @@ namespace FinalProject_CSC260_Tetris
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
             
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
-            _dropTimer = 0; // secs                                                     // game loop move timer starts at 0
+            _timer = 0; // secs                                                         // game loop move timer starts at 0
             _timeTillDrop = 2; // secs                                                  // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
@@ -204,42 +203,37 @@ namespace FinalProject_CSC260_Tetris
         // runs in the window's while loop. forces the piece to drop at regular intervals - initially every two seconds.
         public void GameLoopTimer(double changeInTime)
         {
-            _dropTimer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
+            _timer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
-            if (_dropTimer >= _timeTillDrop)                             // If moveTimeAllowed elapses
-            {
-                _dropTimer = 0;                                             // Reset _dropTimer for next drop
+           // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
+           // {
+                bool pieceCanMoveDown = _currentPiece.CanMove(TetrisGameBoard, 0, 1);
 
-                _currentPiece.Move(TetrisGameBoard, Direction.Down);
                 
-                //if (/*moveInBounds() == false || cellFree() == false*/)
-                //{
 
-                // "Lock-in piece." No need to actually do anything
-
-                // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
-
-                // checkCompletedRows().
-                // clearCompletedRows().
-                // countRowsCleared().
-                // addToScore()
-                // checkForLevelUp()
-                //}
+                if (pieceCanMoveDown)
+               {
+                    if (_timer >= _timeTillDrop)
+                    {
+                        _timer = 0;                                                 // Reset _dropTimer for next drop
+                        _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+                    }
+                }
                 //else
                 //{
-                _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+                    // "Lock-in piece." No need to actually do anything
+
+                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+
+                    // checkCompletedRows().
+                    // clearCompletedRows().
+                    // countRowsCleared().
+                    // addToScore()
+                    // checkForLevelUp()
                 //}
             }
         }
-
-
-
-
-
-
-
-
-
+    }
 
         // private bool _rowIsCompleted(CellColor[,] matrix)
         // Check if row is completed
@@ -258,8 +252,3 @@ namespace FinalProject_CSC260_Tetris
 
         // private void _checkIfGameIsOver(CellColor[,] matrix)
         // end game if block locks in on the top row.
-
-
-        
-    }
-}

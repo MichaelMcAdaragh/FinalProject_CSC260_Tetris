@@ -39,7 +39,7 @@ namespace FinalProject_CSC260_Tetris
         // empty current tetromino cells.
         protected void ClearPieceCells(CellColor[,] matrix)
         {
-                FillPieceCells(matrix, CellColor.Empty);   // turn off current cells
+            FillPieceCells(matrix, CellColor.Empty);   // turn off current cells
         }
 
 
@@ -49,35 +49,21 @@ namespace FinalProject_CSC260_Tetris
         // move tetromino left, right, and down.
         private void _shiftPiecePos(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
         {
-            ClearPieceCells(matrix);              // empty Current Cells 
-
-            bool isAllowed = true;
-
-            for (int i = 0; i < 4; i++)      // for each tetramino cell
+            if (CanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
             {
-                CellPos[i].x += change_x;    // apply change in x
-                CellPos[i].y += change_y;    // apply change in y
+                ClearPieceCells(matrix);              // empty Current Cells 
 
-                if (_moveIsAllowed(matrix, CellPos[i].x, CellPos[i].y) == false)
+                for (int i = 0; i < 4; i++)      // for each tetramino cell
                 {
-                    isAllowed = false;       // Check if the move was allowed
+                    CellPos[i].x += change_x;    // apply change in x
+                    CellPos[i].y += change_y;    // apply change in y
                 }
-            }
 
-            if (isAllowed == false)          // If Any of the moves were not allowed:
-            {
-                for (int i = 0; i < 4; i++)  // Reverse All Moves.
-                {
-                    CellPos[i].x -= change_x;    // reverse change in x
-                    CellPos[i].y -= change_y;    // reverse change in y
-                }
-            }
-            else                                 // moves were all allowed, retain all moves.
-            {
-                PiecePivot.x += change_x;        // update the x-y pos of pivot to reflect the new positions of the piece's cells
+                PiecePivot.x += change_x;        // since move was allowed, update the x-y pos of pivot to reflect the new positions of the piece's cells
                 PiecePivot.y += change_y;
-            }
-            FillPieceCells(matrix, PieceColor);  // fill cells In at New Position.
+
+                FillPieceCells(matrix, PieceColor);  // fill cells In at New Position.
+            }            
         }
 
         // public void Move(CellColor[,] matrix, Direction direction)
@@ -110,7 +96,7 @@ namespace FinalProject_CSC260_Tetris
         {
             ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
 
-            for (int i = 0; i < 4; i++)                  
+            for (int i = 0; i < 4; i++)
             {   // Trig magic. sin and cos are invisible since they cancel out to 1's and 0's at 90 deg spots on unit circle.
                 double X_offsetFromPivot = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
                 double Y_offsetFromPivot = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
@@ -134,14 +120,14 @@ namespace FinalProject_CSC260_Tetris
             FillPieceCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
         }
 
+
+
         // protected void Kick(CellColor[,] matrix, RotationState rotationState)
-        // implement kick table offsets. (Possible a challenging goal.)
+        // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
         // BOUNDS CHECKING & COLLISION //
-
-        
-        
-
         // private bool CellsAreInBounds(int width, int height)
         // test if cells are in bounds
         private bool _cellsAreInBounds(int x_pos, int y_pos)    // Takes the width and height of an array.
@@ -163,22 +149,46 @@ namespace FinalProject_CSC260_Tetris
         {
             if (matrix[x_pos, y_pos] > 0)           // All Cellcolor Enums other than empty have values greater than zero.
                 return false;                       // Thus if value stored at specific Tetrisboard cell is > 0 then it is !empty
+
             else
                 return true;
         }
-       
+
         // private bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
-        // test if area piece is attempting to move to is both in inbound and empty.
+        // return true or false if area piece is attempting to move to is both in inbound and empty.
         private bool _moveIsAllowed(CellColor[,] matrix, int x_pos, int y_pos)
         {
-            if (_cellsAreInBounds(x_pos, y_pos) == false)
-                return false;       // if cells are out of bounds return false.
+            bool isAllowed = true;
 
-            else if(_cellsAreEmpty(matrix, x_pos, y_pos) == false)  // _cellsAreEmpty() requires a bounds check so that it doesn't attempt to read an out of bounds location from the game matrix.
-                    return false;   // if cells were in bounds, check if their position is already occupied.
+            if (!_cellsAreInBounds(x_pos, y_pos))
+                isAllowed = false;       // if cells are out of bounds return false.
+
+            else if (!_cellsAreEmpty(matrix, x_pos, y_pos))  // _cellsAreEmpty() requires a bounds check so that it doesn't attempt to read an out of bounds location from the game matrix.
+                isAllowed = false;   // if cells were in bounds, check if their position is already occupied.
 
             else                    // both checks passed. _moveIsAllowed() returns true.
-                return true;
+                isAllowed = true;
+
+            return isAllowed;
+        }
+        public bool CanMove(CellColor[,] matrix, int change_x, int change_y)
+        {
+            ClearPieceCells(matrix);
+
+            bool isAllowed = true;
+
+            for (int i = 0; i < 4; i++)      // for each tetramino cell
+            {
+                int testX = CellPos[i].x + change_x;    // test change in x
+                int testY = CellPos[i].y + change_y;    // test change in y
+
+                if (!_moveIsAllowed(matrix, testX, testY))
+                    isAllowed = false;       // Check if the move was allowed
+            }
+
+            FillPieceCells(matrix, PieceColor);
+
+            return isAllowed;
         }
     }
 }
