@@ -13,8 +13,10 @@ namespace FinalProject_CSC260_Tetris
         internal CellColor[,] TetrisGameBoard;      // Declare Matrix for TetrisGameBoard
         private TetrominoPiece _currentPiece;       // Declare private variable for the current piece.
         private Random _rng;                        // Declare variable for private Random Number Object.
-        private double _dropTimer;                  // Game Loop Move Timer
-        private double _timeTillDrop;            // Game Loop Interval time.
+        private double _dropTimer;
+        private double _timeTillDrop;
+        private double _lockTimer;
+        private double _timeTillLock;
 
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
@@ -30,11 +32,54 @@ namespace FinalProject_CSC260_Tetris
             
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
             _dropTimer = 0; // secs                                                     // game loop move timer starts at 0
-            _timeTillDrop = 2; // secs                                               // game loop interval starts at 2 secs
+            _timeTillDrop = 2; // secs                                                  // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
 
         // Game Methods
+
+        // private void _spawnRandomTetromino(CellColor[,] matrix)
+        // Spawns a Random New Tetromino at the Center of the Game Board and stores it's class object type to _currentPiece.
+        private void _spawnRandomTetromino()
+        {
+            switch ((TetrominoType)_rng.Next(0, 7))  // tetromino types instantiated by switch with psuedorandom TetrominoType parameter.
+            {                                        // saved as _currentPiece
+                case TetrominoType.I:
+                    var i_piece = new I_Piece(TetrisGameBoard);
+                    _currentPiece = i_piece;
+                    break;
+
+                case TetrominoType.O:
+                    var o_piece = new O_Piece(TetrisGameBoard);
+                    _currentPiece = o_piece;
+                    break;
+
+                case TetrominoType.T:
+                    var t_piece = new T_Piece(TetrisGameBoard);
+                    _currentPiece = t_piece;
+                    break;
+
+                case TetrominoType.S:
+                    var s_piece = new S_Piece(TetrisGameBoard);
+                    _currentPiece = s_piece;
+                    break;
+
+                case TetrominoType.Z:
+                    var z_piece = new Z_Piece(TetrisGameBoard);
+                    _currentPiece = z_piece;
+                    break;
+
+                case TetrominoType.J:
+                    var j_piece = new J_Piece(TetrisGameBoard);
+                    _currentPiece = j_piece;
+                    break;
+
+                case TetrominoType.L:
+                    var l_piece = new L_Piece(TetrisGameBoard);
+                    _currentPiece = l_piece;
+                    break;
+            }
+        }
 
         // private Color _toRayLibColor(Cellcolor color)
         // convert from CellColor to RayLib Color.
@@ -56,7 +101,7 @@ namespace FinalProject_CSC260_Tetris
 
         // void DisplayGameBoard(CellColor[,] matrix, int score, int level)
         // Display Game Board.
-        public void DisplayGameBoard(CellColor[,] matrix /*, int score, int level*/)   // Runs inside the window's while loop.
+        public void DisplayGameBoard()   // Runs inside the window's while loop.
         {
             for (int row = 0; row<GameSettings.Height; row++)                           // nested for loop is drawn same as terminal output.
             {
@@ -68,7 +113,7 @@ namespace FinalProject_CSC260_Tetris
                     row * GameSettings.CellSize,                                        // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
-                    _toRayLibColor(matrix[col,row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
+                    _toRayLibColor(TetrisGameBoard[col,row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
 
                                                                                         // This Snippet from Claude:
                     Raylib.DrawRectangleLines(                                          // draws a gray rectangle around each cell.
@@ -81,7 +126,7 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-        // DisplayGameBoard() method. (TERMINAL TEST PRINT)
+        // DisplayGameBoard() method. (TERMINAL OUTPUT TEST PRINT)
         /*
         internal void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
                 {
@@ -156,63 +201,40 @@ namespace FinalProject_CSC260_Tetris
 
         // public void DropTimer(double changeInTime)   - From an altered Claude Snippet. It reset the the _dropTimer if the player made a move. (which is bad tetris.) I fixed.
         // runs in the window's while loop. forces the piece to drop at regular intervals - initially every two seconds.
-        public void DropTimer(double changeInTime)
+        public void GameLoopTimer(double changeInTime)
         {
             _dropTimer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
             if (_dropTimer >= _timeTillDrop)                             // If moveTimeAllowed elapses
             {
                 _dropTimer = 0;                                             // Reset _dropTimer for next drop
-                _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
-            }
-        }
+                //if (/*moveInBounds() == false || cellFree() == false*/)
+                //{
+                    // "Lock-in piece."
 
-        // private void _spawnRandomTetromino(CellColor[,] matrix)
-        // Spawns a Random New Tetromino at the Center of the Game Board and stores it's class object type to _currentPiece.
-        private void _spawnRandomTetromino()
-        {
-            switch ((TetrominoType)_rng.Next(0, 7))  // tetromino types instantiated by switch with psuedorandom TetrominoType parameter.
-            {                                        // saved as _currentPiece
-                case TetrominoType.I:
-                    var i_piece = new I_Piece(TetrisGameBoard);
-                    _currentPiece = i_piece;
-                    break;
-                    
-                case TetrominoType.O:
-                    var o_piece = new O_Piece(TetrisGameBoard);
-                    _currentPiece = o_piece;
-                    break;
+                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
 
-                case TetrominoType.T:
-                    var t_piece = new T_Piece(TetrisGameBoard);
-                    _currentPiece = t_piece;
-                    break;
-
-                case TetrominoType.S:
-                    var s_piece = new S_Piece(TetrisGameBoard);
-                    _currentPiece = s_piece;
-                    break;
-
-                case TetrominoType.Z:
-                    var z_piece = new Z_Piece(TetrisGameBoard);
-                    _currentPiece = z_piece;
-                    break;
-
-                case TetrominoType.J:
-                    var j_piece = new J_Piece(TetrisGameBoard);
-                    _currentPiece = j_piece;
-                    break;
-
-                case TetrominoType.L:
-                    var l_piece = new L_Piece(TetrisGameBoard);
-                    _currentPiece = l_piece;
-                    break;
+                    // checkCompletedRows().
+                    // clearCompletedRows().
+                    // countRowsCleared().
+                    // addToScore()
+                    // checkForLevelUp()
+                //}
+                //else
+                //{
+                    _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+                //}
             }
         }
 
 
-        // private void _lockTetromino(CellColor[,] matrix)
-        // Lock Tetromino to the Bottom of the Board or to the Block Beneath it.
+
+
+
+
+
+
+
 
         // private bool _rowIsCompleted(CellColor[,] matrix)
         // Check if row is completed
@@ -231,5 +253,17 @@ namespace FinalProject_CSC260_Tetris
 
         // private void _checkIfGameIsOver(CellColor[,] matrix)
         // end game if block locks in on the top row.
+
+
+        // BOUNDS CHECKING & COLLISION //
+
+        // protected bool CellsAreEmpty(CellColor[,] matrix)
+        // test if cells are empty
+
+        // protected bool CellsAreInBounds(int width, int height)
+        // test if cells are in bounds
+
+        // protected bool MoveIsValid(CellColor[,] matrix, int width, int height)
+        // test if area piece is attempting to move to in inbound and empty.
     }
 }

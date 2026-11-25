@@ -115,20 +115,5 @@ namespace FinalProject_CSC260_Tetris
 
         // protected void Kick(CellColor[,] matrix, RotationState rotationState)
         // implement kick table offsets. (Possible a challenging goal.)
-
-
-
-
-        // BOUNDS CHECKING & COLLISION //
-
-        // protected bool CellsAreEmpty(CellColor[,] matrix)
-        // test if cells are empty
-
-        // protected bool CellsAreInBounds(int width, int height)
-        // test if cells are in bounds
-
-        // protected bool MoveIsValid(CellColor[,] matrix, int width, int height)
-        // test if area piece is attempting to move to in inbound and empty.
-
     }
 }

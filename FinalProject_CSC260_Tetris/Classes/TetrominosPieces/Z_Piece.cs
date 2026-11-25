@@ -16,7 +16,7 @@ namespace FinalProject_CSC260_Tetris
             CellPos[3].x = 6; CellPos[3].y = 1;
 
             // set pivot coordinates:
-            PiecePivot.x = 4; PiecePivot.y = 1;
+            PiecePivot.x = 5; PiecePivot.y = 1;
 
             // set piece color
             PieceColor = CellColor.Red;
