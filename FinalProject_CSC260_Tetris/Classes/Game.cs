@@ -169,7 +169,7 @@ namespace FinalProject_CSC260_Tetris
 
             // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
             // {
-            bool pieceCanMoveDown = _currentPiece.CanMove(TetrisGameBoard, 0, 1);
+            bool pieceCanMoveDown = _currentPiece.PieceCanMove(TetrisGameBoard, 0, 1);
 
             if (pieceCanMoveDown)                                                // If Piece has space to move below.
             {
@@ -201,12 +201,14 @@ namespace FinalProject_CSC260_Tetris
         {
             int rowsCompleted = 0;
 
-            for (int row = 0; row < GameSettings.Height; row++)
+            for (int row = 0; row < GameSettings.Height; row++)         // Go thru every row
             {
-                for (int col = 0; col < GameSettings.Width; col++)
+                for (int col = 0; col < GameSettings.Width; col++)      // Go thru every column
                 {
-
-                    //
+                    if (TetrominoPiece.CellsAreEmpty(TetrisGameBoard, col, row))
+                    { 
+                        
+                    }
                 }
             }
 

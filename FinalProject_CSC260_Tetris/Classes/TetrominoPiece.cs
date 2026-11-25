@@ -34,7 +34,7 @@ namespace FinalProject_CSC260_Tetris
         // move tetromino left, right, and down. returns status of its success as a bool.
         private bool _pieceShiftedSuccessfully(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
         {
-            if (CanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
+            if (PieceCanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
             {
                 ClearPieceCells(matrix);              // empty Current Cells 
 
@@ -79,7 +79,7 @@ namespace FinalProject_CSC260_Tetris
         // private void _rotateClockWise(double xOffset, yOffset)
         private bool _rotatedClockWiseSuccessfully(CellColor[,] matrix)
         {
-            if (CanRotate(matrix, RotationalDirection.Clockwise))
+            if (PieceCanRotate(matrix, RotationalDirection.Clockwise))
             {
                 ClearPieceCells(matrix);
 
@@ -102,7 +102,7 @@ namespace FinalProject_CSC260_Tetris
         // private void _rotateCounterClockWise(double xOffset, yOffset)
         private bool _rotatedCounterClockWiseSuccessfully(CellColor[,] matrix)
         {
-            if (CanRotate(matrix, RotationalDirection.CounterClockwise))
+            if (PieceCanRotate(matrix, RotationalDirection.CounterClockwise))
             {
                 ClearPieceCells(matrix);
 
@@ -174,7 +174,7 @@ namespace FinalProject_CSC260_Tetris
 
         // private bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
         // return true or false if area piece is attempting to move to is both in inbound and empty.
-        private static bool MoveIsAllowed(CellColor[,] matrix, int x_pos, int y_pos)
+        public static bool MoveIsAllowed(CellColor[,] matrix, int x_pos, int y_pos)
         {
             bool isAllowed = true;
 
@@ -189,7 +189,7 @@ namespace FinalProject_CSC260_Tetris
 
             return isAllowed;
         }
-        public bool CanMove(CellColor[,] matrix, int change_x, int change_y)    // Used by game loop to determine between droptime and locktime.
+        public bool PieceCanMove(CellColor[,] matrix, int change_x, int change_y)    // Used by game loop to determine between droptime and locktime.
         {
             ClearPieceCells(matrix);
 
@@ -211,7 +211,7 @@ namespace FinalProject_CSC260_Tetris
 
         // BOOL CANROTATE() !!!
         // Simulates a rotation and determines whether or not it was in bounds
-        public bool CanRotate(CellColor[,] matrix, RotationalDirection direction)
+        public bool PieceCanRotate(CellColor[,] matrix, RotationalDirection direction)
         {
             ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
 
