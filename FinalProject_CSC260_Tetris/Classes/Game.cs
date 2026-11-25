@@ -260,41 +260,6 @@ namespace FinalProject_CSC260_Tetris
         // end game if block locks in on the top row.
 
 
-        // BOUNDS CHECKING & COLLISION //
-
-        // private bool CellsAreEmpty(CellColor[,] matrix)
-        // test if cells are empty
-        private bool _cellsAreEmpty(int x_pos, int y_pos)
-        {                                           // Recall TetrisGameBoard is of Type CellColor[,] matrix.
-            if (TetrisGameBoard[x_pos, y_pos] > 0)  // All Cellcolor Enums other than empty have values greater than zero.
-                return false;                       // Thus if value stored at specific Tetrisboard cell is > 0 then it is !empty
-            else
-                return true;
-        }
-
-        // private bool CellsAreInBounds(int width, int height)
-        // test if cells are in bounds
-        private bool _cellsAreInBounds(int x_pos, int y_pos)    // Takes the width and height of an array.
-        {
-            bool inBounds = true;
-
-            if (x_pos < 0 || x_pos > GameSettings.Width)
-                inBounds = false;
-
-            if (y_pos < 0 || y_pos > GameSettings.Height)
-                inBounds = false;
-
-            return inBounds;
-        }
-        // protected bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
-        // test if area piece is attempting to move to is both in inbound and empty.
-        private bool _moveIsAllowed(int x_pos, int y_pos)
-        {
-            if (_cellsAreEmpty(x_pos, y_pos) && _cellsAreInBounds(x_pos, y_pos))
-                return true;
-            
-            else
-                return false;
-        }
+        
     }
 }
