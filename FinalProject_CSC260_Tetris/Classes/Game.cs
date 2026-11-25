@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Raylib_cs;
@@ -208,21 +209,25 @@ namespace FinalProject_CSC260_Tetris
             if (_dropTimer >= _timeTillDrop)                             // If moveTimeAllowed elapses
             {
                 _dropTimer = 0;                                             // Reset _dropTimer for next drop
+
+                _currentPiece.Move(TetrisGameBoard, Direction.Down);
+                
                 //if (/*moveInBounds() == false || cellFree() == false*/)
                 //{
-                    // "Lock-in piece."
 
-                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+                // "Lock-in piece." No need to actually do anything
 
-                    // checkCompletedRows().
-                    // clearCompletedRows().
-                    // countRowsCleared().
-                    // addToScore()
-                    // checkForLevelUp()
+                // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+
+                // checkCompletedRows().
+                // clearCompletedRows().
+                // countRowsCleared().
+                // addToScore()
+                // checkForLevelUp()
                 //}
                 //else
                 //{
-                    _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+                _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
                 //}
             }
         }
@@ -257,13 +262,39 @@ namespace FinalProject_CSC260_Tetris
 
         // BOUNDS CHECKING & COLLISION //
 
-        // protected bool CellsAreEmpty(CellColor[,] matrix)
+        // private bool CellsAreEmpty(CellColor[,] matrix)
         // test if cells are empty
+        private bool _cellsAreEmpty(int x_pos, int y_pos)
+        {                                           // Recall TetrisGameBoard is of Type CellColor[,] matrix.
+            if (TetrisGameBoard[x_pos, y_pos] > 0)  // All Cellcolor Enums other than empty have values greater than zero.
+                return false;                       // Thus if value stored at specific Tetrisboard cell is > 0 then it is !empty
+            else
+                return true;
+        }
 
-        // protected bool CellsAreInBounds(int width, int height)
+        // private bool CellsAreInBounds(int width, int height)
         // test if cells are in bounds
+        private bool _cellsAreInBounds(int x_pos, int y_pos)    // Takes the width and height of an array.
+        {
+            bool inBounds = true;
 
-        // protected bool MoveIsValid(CellColor[,] matrix, int width, int height)
-        // test if area piece is attempting to move to in inbound and empty.
+            if (x_pos < 0 || x_pos > GameSettings.Width)
+                inBounds = false;
+
+            if (y_pos < 0 || y_pos > GameSettings.Height)
+                inBounds = false;
+
+            return inBounds;
+        }
+        // protected bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
+        // test if area piece is attempting to move to is both in inbound and empty.
+        private bool _moveIsAllowed(int x_pos, int y_pos)
+        {
+            if (_cellsAreEmpty(x_pos, y_pos) && _cellsAreInBounds(x_pos, y_pos))
+                return true;
+            
+            else
+                return false;
+        }
     }
 }
