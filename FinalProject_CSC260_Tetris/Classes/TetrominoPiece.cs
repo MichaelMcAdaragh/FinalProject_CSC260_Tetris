@@ -6,24 +6,14 @@ namespace FinalProject_CSC260_Tetris
 {
     abstract class TetrominoPiece
     {
-        // TetrominoPiece Fields:
+        // TetrominoPiece Fields & Properties:
         protected CellCoords[] CellPos = new CellCoords[4]; // Array of xy int coord structs that represents each of the piece's cell positions.
         protected PivotCoords PiecePivot;  // xy double coord struct that represents the exact radial pivot of the piece's rotation.
         protected CellColor PieceColor;    // stores the enumerated cell color of the piece.
         protected RotationState PieceRotationState = RotationState.Deg000; // store rotation state. initialized at zero degrees.
 
-        // TetrominoPiece Properties
-
-
-
-        // TetrominoPiece Base Constructor???
-
-
-
         // TetrominoPiece METHODS:
-
         // PIECE MOVEMENT AND MANIPULATION //
-
 
         // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
         // fill current tetromino cells with a desired color.
@@ -42,12 +32,9 @@ namespace FinalProject_CSC260_Tetris
             FillPieceCells(matrix, CellColor.Empty);   // turn off current cells
         }
 
-
-
-
         // protected void ShiftPos(Direction direction)
         // move tetromino left, right, and down.
-        private void _shiftPiecePos(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
+        private bool _pieceShiftedSuccessfully(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
         {
             if (CanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
             {
@@ -63,61 +50,95 @@ namespace FinalProject_CSC260_Tetris
                 PiecePivot.y += change_y;
 
                 FillPieceCells(matrix, PieceColor);  // fill cells In at New Position.
-            }            
-        }
+
+                return true;
+            }
+            else
+                return false;
+        }        
 
         // public void Move(CellColor[,] matrix, Direction direction)
         // Move tetromino left, right, or down
 
-        public void Move(CellColor[,] matrix, Direction direction)      // MOVE FUNCTION
+        public bool Move(CellColor[,] matrix, Direction direction)      // MOVE FUNCTION
         {
             switch (direction)
             {
                 case Direction.Left:                        // LEFT                  
-                    _shiftPiecePos(matrix, -1, 0); // (x--, y + 0)
-                    break;
+                    return _pieceShiftedSuccessfully(matrix, -1, 0); // (x--, y + 0)
 
                 case Direction.Right:                       // RIGHT
-                    _shiftPiecePos(matrix, 1, 0); // (x++, y + 0)
-                    break;
+                    return _pieceShiftedSuccessfully(matrix, 1, 0); // (x++, y + 0);
 
                 case Direction.Down:                        // DOWN
-                    _shiftPiecePos(matrix, 0, 1); // (x + 0, y++)
-                    break;
+                    return _pieceShiftedSuccessfully(matrix, 0, 1); // (x + 0, y++)
 
-                default:    // else do nothing
-                    break;
+                default:
+                    return false;
             }
         }
 
+        // private void _rotateClockWise(double xOffset, yOffset)
+        private bool _rotateClockWise_Successful(CellColor[,] matrix)
+        {
+            if (_canRotate(matrix, RotationalDirection.Clockwise))
+            {
+                ClearPieceCells(matrix);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    double x_pivotOffset = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
+                    double y_pivotOffset = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
+
+                    CellPos[i].x = (int)(PiecePivot.x - y_pivotOffset);    // Update Location of block's X 90 degrees clockwise.
+                    CellPos[i].y = (int)(PiecePivot.y + x_pivotOffset);    // Update Location of block's Y 90 degrees clockwise.
+                }
+
+                FillPieceCells(matrix, PieceColor);
+
+                return true;
+            }
+            else
+                return false;
+        }
+        // private void _rotateCounterClockWise(double xOffset, yOffset)
+        private bool _rotateCounterClockWise_Successful(CellColor[,] matrix)
+        {
+            if (_canRotate(matrix, RotationalDirection.CounterClockwise))
+            {
+                ClearPieceCells(matrix);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    double x_pivotOffset = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
+                    double y_pivotOffset = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
+
+                    CellPos[i].x = (int)(PiecePivot.x + y_pivotOffset);     // Update Location of block's X 90 degrees counter clockwise.
+                    CellPos[i].y = (int)(PiecePivot.y - x_pivotOffset);     // Update Location of block's Y 90 degrees counter clockwise.
+                }
+
+                FillPieceCells(matrix, PieceColor);
+
+                return true;
+            }
+            else
+                return false;
+        }
         // public virtual void Move(CellColor[,] matrix, RotationalDirection rotationalDirection)
         // Rotate tetromino clockwise or counterclockwise.
-        public void Move(CellColor[,] matrix, RotationalDirection rotationalDirection)
+        public bool Move(CellColor[,] matrix, RotationalDirection direction)
         {
-            ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
+            switch (direction)                                       // NEED TO DRAW OUT BY HAND!!!
+            {
+                case RotationalDirection.Clockwise:
+                    return _rotateClockWise_Successful(matrix);
 
-            for (int i = 0; i < 4; i++)
-            {   // Trig magic. sin and cos are invisible since they cancel out to 1's and 0's at 90 deg spots on unit circle.
-                double X_offsetFromPivot = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
-                double Y_offsetFromPivot = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
+                case RotationalDirection.CounterClockwise:
+                    return _rotateCounterClockWise_Successful(matrix);
 
-                switch (rotationalDirection)                                       // NEED TO DRAW OUT BY HAND!!!
-                {
-                    case RotationalDirection.Clockwise:
-                        CellPos[i].x = (int)(PiecePivot.x - Y_offsetFromPivot);    // Update Location of block's X 90 degrees clockwise.
-                        CellPos[i].y = (int)(PiecePivot.y + X_offsetFromPivot);    // Update Location of block's Y 90 degrees clockwise. 
-                        break;
-
-                    case RotationalDirection.CounterClockwise:                      // Flipping the signs on these two lines results in CounterClockWise rotation.
-                        CellPos[i].x = (int)(PiecePivot.x + Y_offsetFromPivot);     // Update Location of block's X 90 degrees counter clockwise.
-                        CellPos[i].y = (int)(PiecePivot.y - X_offsetFromPivot);     // Update Location of block's Y 90 degrees counter clockwise.
-                        break;
-
-                    default:    // else do nothing
-                        break;
-                }
+                default:
+                    return false;
             }
-            FillPieceCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
         }
 
 
@@ -188,6 +209,41 @@ namespace FinalProject_CSC260_Tetris
 
             FillPieceCells(matrix, PieceColor);
 
+            return isAllowed;
+        }
+
+        // BOOL CANROTATE() !!!
+        private bool _canRotate(CellColor[,] matrix, RotationalDirection direction)
+        {
+            ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
+
+            bool isAllowed = true;
+
+            for (int i = 0; i < 4; i++)
+            {
+                CellCoords testCellPos; // test coordinates
+                
+                double X_offsetFromPivot = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
+                double Y_offsetFromPivot = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
+
+                if (direction == RotationalDirection.Clockwise)
+                {
+                    testCellPos.x = (int)(PiecePivot.x - Y_offsetFromPivot);    // Record test location of each cells's X 90 degrees clockwise.
+                    testCellPos.y = (int)(PiecePivot.y + X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees clockwise.
+
+                    if (!_moveIsAllowed(matrix, testCellPos.x, testCellPos.y))           // Check if the move was allowed
+                        isAllowed = false;
+                }
+                else if (direction == RotationalDirection.CounterClockwise)       // Flipping the signs on these two lines results in CounterClockWise rotation.
+                {
+                    testCellPos.x = (int)(PiecePivot.x + Y_offsetFromPivot);     // Record test location of each cells's X 90 degrees counterclockwise.
+                    testCellPos.y = (int)(PiecePivot.y - X_offsetFromPivot);     // Record test location of each cells's Y 90 degrees counterclockwise.
+
+                    if (!_moveIsAllowed(matrix, testCellPos.x, testCellPos.y))
+                        isAllowed = false;
+                }                
+            }
+            FillPieceCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
             return isAllowed;
         }
     }

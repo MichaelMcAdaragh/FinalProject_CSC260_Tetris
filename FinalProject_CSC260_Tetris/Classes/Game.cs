@@ -15,8 +15,7 @@ namespace FinalProject_CSC260_Tetris
         private TetrominoPiece _currentPiece;       // Declare private variable for the current piece.
         private Random _rng;                        // Declare variable for private Random Number Object.
         private double _timer;
-        private double _timeTillDrop;
-        //private double _timeTillLock;
+        private double _timeAllowed;
 
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
@@ -32,7 +31,7 @@ namespace FinalProject_CSC260_Tetris
             
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
             _timer = 0; // secs                                                         // game loop move timer starts at 0
-            _timeTillDrop = 2; // secs                                                  // game loop interval starts at 2 secs
+            _timeAllowed = 2; // secs                                                  // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
 
@@ -174,27 +173,29 @@ namespace FinalProject_CSC260_Tetris
         // take raw input from the user
         public void HandleUserInput()
         {
+            //bool moveSucceeded = false;
+
             KeyboardKey key = (KeyboardKey)Raylib.GetKeyPressed();  // gets the key the player pressed and stores it in key variable
             switch (key)
             {
                 case KeyboardKey.Left:
-                    _currentPiece.Move(TetrisGameBoard, Direction.Left);
+                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, Direction.Left);
                     break;
 
                 case KeyboardKey.Right:
-                    _currentPiece.Move(TetrisGameBoard, Direction.Right);
+                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, Direction.Right);
                     break;
 
                 case KeyboardKey.Down:
-                    _currentPiece.Move(TetrisGameBoard, Direction.Down);
+                    /*moveSucceeded =*/_currentPiece.Move(TetrisGameBoard, Direction.Down);
                     break;
 
                 case KeyboardKey.J:
-                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
+                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
                     break;
 
                 case KeyboardKey.F:
-                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
+                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
                     break;
             }
         }
@@ -208,29 +209,30 @@ namespace FinalProject_CSC260_Tetris
            // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
            // {
                 bool pieceCanMoveDown = _currentPiece.CanMove(TetrisGameBoard, 0, 1);
-
-                
-
-                if (pieceCanMoveDown)
+            
+               if (pieceCanMoveDown)                                                // If Piece has space to move below.
                {
-                    if (_timer >= _timeTillDrop)
+                    if (_timer >= _timeAllowed)
                     {
                         _timer = 0;                                                 // Reset _dropTimer for next drop
                         _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
                     }
                 }
-                //else
-                //{
-                    // "Lock-in piece." No need to actually do anything
+                else
+                {
+                    if (_timer >= _timeAllowed)
+                    {   // "Lock-in piece." No need to actually do anything
 
-                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+                        // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
 
-                    // checkCompletedRows().
-                    // clearCompletedRows().
-                    // countRowsCleared().
-                    // addToScore()
-                    // checkForLevelUp()
-                //}
+                        // checkCompletedRows().
+                        // clearCompletedRows().
+                        // countRowsCleared().
+                        // addToScore()
+                        // checkForLevelUp()
+                        _spawnRandomTetromino();
+                    }
+                }
             }
         }
     }
