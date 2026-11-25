@@ -9,27 +9,30 @@ namespace FinalProject_CSC260_Tetris.Main           // Credit Claude on the basi
         static void Main(string[] args)
         {
             Raylib.InitWindow(GameSettings.WindowWidth, GameSettings.WindowHeight, "Tetris");   // This creates the window.
-            Raylib.SetTargetFPS(60);    // I assume this limits to 60 Frames per second.
+            Raylib.SetTargetFPS(60);                        // limits to 60 Frames per second.
 
             Game game = new Game();
 
-            while (!Raylib.WindowShouldClose())                                                 // while user attempt close window == false.
+            while (!Raylib.WindowShouldClose())             // while user attempt to close window == false.
             {
-                // game.HandleInput();                                                          // (a key down moves piece)
-                // game.Update(Raylib.GetFrameTime());                                          // ("the timer ticks" / drop piece)
+                game.HandleUserInput();                     // (handles user inputs to move a piece)
+                game.MoveTimer(Raylib.GetFrameTime());      // GetFrameTime() is currently 1/60 of a sec (Because thats the same as 60FPS)
+                                                            // auto-drops piece if no move is made by end of _moveTimeAllowed
 
-                Raylib.BeginDrawing();                                                          // Start Drawing.
+
+                ////////////////////////////////////////////////////////////////////////////////////////////
+                Raylib.BeginDrawing();                                          // Start Drawing.
                 Raylib.ClearBackground(Color.Black);
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-                game.DisplayGameBoard(game.TetrisGameBoard);                                    // Draw Current Game State.
+                game.DisplayGameBoard(game.TetrisGameBoard);                    // Draw Current Game State.
 
         
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                Raylib.EndDrawing();                                                            // End Drawing.
+                Raylib.EndDrawing();                                            // End Drawing.
             }
-            Raylib.CloseWindow();                                                               // Terminate the window.           
+            Raylib.CloseWindow();                                               // Terminate the window.           
         }
     }
 }

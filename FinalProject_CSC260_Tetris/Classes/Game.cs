@@ -14,7 +14,7 @@ namespace FinalProject_CSC260_Tetris
         private TetrominoPiece _currentPiece;       // Declare private variable for the current piece.
         private Random _rng;                        // Declare variable for local private Random Number Object.
         private double _moveTimer;                  // Game Loop Move Timer
-        private double _timerInterval;               // Game Loop Interval time.
+        private double _moveTimeAllowed;               // Game Loop Interval time.
 
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
@@ -29,8 +29,8 @@ namespace FinalProject_CSC260_Tetris
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
             
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
-            _moveTimer = 0;                                                             // game loop move timer starts at 0
-            _timerInterval = 10;                                                         // game loop interval starts at 10
+            _moveTimer = 0; // secs                                                     // game loop move timer starts at 0
+            _moveTimeAllowed = 2; // secs                                               // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
 
@@ -40,7 +40,7 @@ namespace FinalProject_CSC260_Tetris
         // convert enum color from the logic into a raylib compatable color.
         private Color _toRayLibColor(CellColor color)             // This Conversion Allows abstraction between Raylib and my Underlying Logic.
         {
-            return color switch                                   // Cool switch syntax!!!
+            return color switch                            // Cool switch syntax!!! outputs corresponding Color (Raylib) from CellColor inputs.
             {
                 CellColor.Empty => Color.Black,
                 CellColor.Cyan => new Color(0, 255, 255, 255),    // Custom Cyan Color
@@ -161,6 +161,20 @@ namespace FinalProject_CSC260_Tetris
                 _moveTimer = 0;     // reset the timer if the player makes a move.
             }
         }
+
+        // public void Update(double changeInTime)
+        // 
+        public void MoveTimer(double changeInTime)
+        {
+            _moveTimer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
+
+            if (_moveTimer >= _moveTimeAllowed)                             // If moveTimeAllowed elapses
+            {
+                _moveTimer = 0;                                             // Reset _moveTimer for next move
+                _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+            }
+        }
+
 
         // private void _spawnRandomTetromino(CellColor[,] matrix)
         // Spawns a Random New Tetromino at the Center of the Game Board and stores it's class object type to _currentPiece.
