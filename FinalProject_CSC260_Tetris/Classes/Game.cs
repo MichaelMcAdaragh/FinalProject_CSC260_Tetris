@@ -12,9 +12,9 @@ namespace FinalProject_CSC260_Tetris
         // Game Fields & Properties:
         internal CellColor[,] TetrisGameBoard;      // Declare Matrix for TetrisGameBoard
         private TetrominoPiece _currentPiece;       // Declare private variable for the current piece.
-        private Random _rng;                        // Declare variable for local private Random Number Object.
-        private double _moveTimer;                  // Game Loop Move Timer
-        private double _moveTimeAllowed;               // Game Loop Interval time.
+        private Random _rng;                        // Declare variable for private Random Number Object.
+        private double _dropTimer;                  // Game Loop Move Timer
+        private double _timeTillDrop;            // Game Loop Interval time.
 
         public int Score { get; private set; } // Score and Level can be read from anywhere,
         public int Level { get; private set; } // but can only be modified by Game Class.
@@ -29,18 +29,18 @@ namespace FinalProject_CSC260_Tetris
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
             
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
-            _moveTimer = 0; // secs                                                     // game loop move timer starts at 0
-            _moveTimeAllowed = 2; // secs                                               // game loop interval starts at 2 secs
+            _dropTimer = 0; // secs                                                     // game loop move timer starts at 0
+            _timeTillDrop = 2; // secs                                               // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
 
         // Game Methods
 
         // private Color _toRayLibColor(Cellcolor color)
-        // convert enum color from the logic into a raylib compatable color.
-        private Color _toRayLibColor(CellColor color)             // This Conversion Allows abstraction between Raylib and my Underlying Logic.
+        // convert from CellColor to RayLib Color.
+        private Color _toRayLibColor(CellColor color)   // This Conversion Allows abstraction between Raylib and my Underlying Logic.
         {
-            return color switch                            // Cool switch syntax!!! outputs corresponding Color (Raylib) from CellColor inputs.
+            return color switch                         // Cool switch syntax!!! outputs corresponding Color (Raylib) from CellColor inputs.
             {
                 CellColor.Empty => Color.Black,
                 CellColor.Cyan => new Color(0, 255, 255, 255),    // Custom Cyan Color
@@ -56,26 +56,28 @@ namespace FinalProject_CSC260_Tetris
 
         // void DisplayGameBoard(CellColor[,] matrix, int score, int level)
         // Display Game Board.
-        public void DisplayGameBoard(CellColor[,] matrix /*, int score, int level*/)  // Runs inside the window's while loop.
+        public void DisplayGameBoard(CellColor[,] matrix /*, int score, int level*/)   // Runs inside the window's while loop.
         {
-            for (int row = 0; row<GameSettings.Height; row++)                           // nested for loop is same as terminal print out
+            for (int row = 0; row<GameSettings.Height; row++)                           // nested for loop is drawn same as terminal output.
             {
                 for (int col = 0; col<GameSettings.Width; col++)                        // but pixel math instead of ASCII characters.
                 {
+                                                                                        // My Adaptation of the following Claude Snippet:
                     Raylib.DrawRectangle(                                               // fills each cell with the correct cell color.
                     col * GameSettings.CellSize,                                        // calculates current pos X in pixels
                     row * GameSettings.CellSize,                                        // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
-                    _toRayLibColor(matrix[col,row]));            // !!!! Fills cell with the correct cell color for its position. !!!!
+                    _toRayLibColor(matrix[col,row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
 
+                                                                                        // This Snippet from Claude:
                     Raylib.DrawRectangleLines(                                          // draws a gray rectangle around each cell.
                     col* GameSettings.CellSize,                                         // calculates current pos X in pixels
                     row* GameSettings.CellSize,                                         // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
                     Color.DarkGray);                                                    // rectangle color DarkGray
-                }
+                }                                                                       // This snippet makes the Game Board Cells into a Gridiron.
             }
         }
 
@@ -152,19 +154,18 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-        // public void Update(double changeInTime)
-        // 
-        public void MoveTimer(double changeInTime)
+        // public void DropTimer(double changeInTime)   - From an altered Claude Snippet. It reset the the _dropTimer if the player made a move. (which is bad tetris.) I fixed.
+        // runs in the window's while loop. forces the piece to drop at regular intervals - initially every two seconds.
+        public void DropTimer(double changeInTime)
         {
-            _moveTimer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
+            _dropTimer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
-            if (_moveTimer >= _moveTimeAllowed)                             // If moveTimeAllowed elapses
+            if (_dropTimer >= _timeTillDrop)                             // If moveTimeAllowed elapses
             {
-                _moveTimer = 0;                                             // Reset _moveTimer for next move
+                _dropTimer = 0;                                             // Reset _dropTimer for next drop
                 _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
             }
         }
-
 
         // private void _spawnRandomTetromino(CellColor[,] matrix)
         // Spawns a Random New Tetromino at the Center of the Game Board and stores it's class object type to _currentPiece.
