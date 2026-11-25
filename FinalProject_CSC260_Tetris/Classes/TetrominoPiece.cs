@@ -9,14 +9,13 @@ namespace FinalProject_CSC260_Tetris
         // TetrominoPiece Fields & Properties:
         protected CellCoords[] CellPos = new CellCoords[4]; // Array of xy int coord structs that represents each of the piece's cell positions.
         protected PivotCoords PiecePivot;  // xy double coord struct that represents the exact radial pivot of the piece's rotation.
-        protected CellColor PieceColor;    // stores the enumerated cell color of the piece.
+        public CellColor PieceColor { get; protected set; }    // stores the enumerated cell color of the piece.
         protected RotationState PieceRotationState = RotationState.Deg000; // store rotation state. initialized at zero degrees.
 
         // TetrominoPiece METHODS:
         // PIECE MOVEMENT AND MANIPULATION //
 
         // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
-        // fill current tetromino cells with a desired color.
         protected void FillPieceCells(CellColor[,] matrix, CellColor color)
         {
             for (int i = 0; i < 4; i++)
@@ -26,14 +25,13 @@ namespace FinalProject_CSC260_Tetris
         }
 
         // protected void ClearCells(CellColor[,] matrix, CellCoords[] piece)
-        // empty current tetromino cells.
         protected void ClearPieceCells(CellColor[,] matrix)
         {
             FillPieceCells(matrix, CellColor.Empty);   // turn off current cells
         }
 
         // protected void ShiftPos(Direction direction)
-        // move tetromino left, right, and down.
+        // move tetromino left, right, and down. returns status of its success as a bool.
         private bool _pieceShiftedSuccessfully(CellColor[,] matrix, int change_x, int change_y)  // change in x: -- = left, ++ = right. change in y: ++ = down, -- = N/A.
         {
             if (CanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
@@ -55,7 +53,7 @@ namespace FinalProject_CSC260_Tetris
             }
             else
                 return false;
-        }        
+        }
 
         // public void Move(CellColor[,] matrix, Direction direction)
         // Move tetromino left, right, or down
@@ -79,9 +77,9 @@ namespace FinalProject_CSC260_Tetris
         }
 
         // private void _rotateClockWise(double xOffset, yOffset)
-        private bool _rotateClockWise_Successful(CellColor[,] matrix)
+        private bool _rotatedClockWiseSuccessfully(CellColor[,] matrix)
         {
-            if (_canRotate(matrix, RotationalDirection.Clockwise))
+            if (CanRotate(matrix, RotationalDirection.Clockwise))
             {
                 ClearPieceCells(matrix);
 
@@ -102,9 +100,9 @@ namespace FinalProject_CSC260_Tetris
                 return false;
         }
         // private void _rotateCounterClockWise(double xOffset, yOffset)
-        private bool _rotateCounterClockWise_Successful(CellColor[,] matrix)
+        private bool _rotatedCounterClockWiseSuccessfully(CellColor[,] matrix)
         {
-            if (_canRotate(matrix, RotationalDirection.CounterClockwise))
+            if (CanRotate(matrix, RotationalDirection.CounterClockwise))
             {
                 ClearPieceCells(matrix);
 
@@ -131,10 +129,10 @@ namespace FinalProject_CSC260_Tetris
             switch (direction)                                       // NEED TO DRAW OUT BY HAND!!!
             {
                 case RotationalDirection.Clockwise:
-                    return _rotateClockWise_Successful(matrix);
+                    return _rotatedClockWiseSuccessfully(matrix);
 
                 case RotationalDirection.CounterClockwise:
-                    return _rotateCounterClockWise_Successful(matrix);
+                    return _rotatedCounterClockWiseSuccessfully(matrix);
 
                 default:
                     return false;
@@ -147,11 +145,10 @@ namespace FinalProject_CSC260_Tetris
         // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
         // BOUNDS CHECKING & COLLISION //
         // private bool CellsAreInBounds(int width, int height)
         // test if cells are in bounds
-        private bool _cellsAreInBounds(int x_pos, int y_pos)    // Takes the width and height of an array.
+        public static bool CellsAreInBounds(int x_pos, int y_pos)    // Takes the width and height of an array.
         {
             bool inBounds = true;
 
@@ -166,7 +163,7 @@ namespace FinalProject_CSC260_Tetris
 
         // private bool CellsAreEmpty(CellColor[,] matrix)
         // test if cells are empty
-        private bool _cellsAreEmpty(CellColor[,] matrix, int x_pos, int y_pos)
+        public static bool CellsAreEmpty(CellColor[,] matrix, int x_pos, int y_pos)    // used by class Game method int _rowsCompleted(). 
         {
             if (matrix[x_pos, y_pos] > 0)           // All Cellcolor Enums other than empty have values greater than zero.
                 return false;                       // Thus if value stored at specific Tetrisboard cell is > 0 then it is !empty
@@ -177,14 +174,14 @@ namespace FinalProject_CSC260_Tetris
 
         // private bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
         // return true or false if area piece is attempting to move to is both in inbound and empty.
-        private bool _moveIsAllowed(CellColor[,] matrix, int x_pos, int y_pos)
+        private static bool MoveIsAllowed(CellColor[,] matrix, int x_pos, int y_pos)
         {
             bool isAllowed = true;
 
-            if (!_cellsAreInBounds(x_pos, y_pos))
+            if (!CellsAreInBounds(x_pos, y_pos))
                 isAllowed = false;       // if cells are out of bounds return false.
 
-            else if (!_cellsAreEmpty(matrix, x_pos, y_pos))  // _cellsAreEmpty() requires a bounds check so that it doesn't attempt to read an out of bounds location from the game matrix.
+            else if (!CellsAreEmpty(matrix, x_pos, y_pos))  // _cellsAreEmpty() requires a bounds check so that it doesn't attempt to read an out of bounds location from the game matrix.
                 isAllowed = false;   // if cells were in bounds, check if their position is already occupied.
 
             else                    // both checks passed. _moveIsAllowed() returns true.
@@ -192,7 +189,7 @@ namespace FinalProject_CSC260_Tetris
 
             return isAllowed;
         }
-        public bool CanMove(CellColor[,] matrix, int change_x, int change_y)
+        public bool CanMove(CellColor[,] matrix, int change_x, int change_y)    // Used by game loop to determine between droptime and locktime.
         {
             ClearPieceCells(matrix);
 
@@ -203,7 +200,7 @@ namespace FinalProject_CSC260_Tetris
                 int testX = CellPos[i].x + change_x;    // test change in x
                 int testY = CellPos[i].y + change_y;    // test change in y
 
-                if (!_moveIsAllowed(matrix, testX, testY))
+                if (!MoveIsAllowed(matrix, testX, testY))
                     isAllowed = false;       // Check if the move was allowed
             }
 
@@ -213,7 +210,8 @@ namespace FinalProject_CSC260_Tetris
         }
 
         // BOOL CANROTATE() !!!
-        private bool _canRotate(CellColor[,] matrix, RotationalDirection direction)
+        // Simulates a rotation and determines whether or not it was in bounds
+        public bool CanRotate(CellColor[,] matrix, RotationalDirection direction)
         {
             ClearPieceCells(matrix);                                            // Clear Piece From Game Board Matrix.
 
@@ -222,29 +220,31 @@ namespace FinalProject_CSC260_Tetris
             for (int i = 0; i < 4; i++)
             {
                 CellCoords testCellPos; // test coordinates
-                
-                double X_offsetFromPivot = CellPos[i].x - PiecePivot.x;    // find blocks's X offset from Pivot.
-                double Y_offsetFromPivot = CellPos[i].y - PiecePivot.y;    // find block's Y offset from Pivot.
+
+                double X_offsetFromPivot = CellPos[i].x - PiecePivot.x;         // find blocks's X offset from Pivot.
+                double Y_offsetFromPivot = CellPos[i].y - PiecePivot.y;         // find block's Y offset from Pivot.
 
                 if (direction == RotationalDirection.Clockwise)
                 {
                     testCellPos.x = (int)(PiecePivot.x - Y_offsetFromPivot);    // Record test location of each cells's X 90 degrees clockwise.
                     testCellPos.y = (int)(PiecePivot.y + X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees clockwise.
 
-                    if (!_moveIsAllowed(matrix, testCellPos.x, testCellPos.y))           // Check if the move was allowed
+                    if (!MoveIsAllowed(matrix, testCellPos.x, testCellPos.y))  // Check if the move was allowed
                         isAllowed = false;
                 }
-                else if (direction == RotationalDirection.CounterClockwise)       // Flipping the signs on these two lines results in CounterClockWise rotation.
+                else if (direction == RotationalDirection.CounterClockwise)     // Flipping the signs on these two lines results in CounterClockWise rotation.
                 {
-                    testCellPos.x = (int)(PiecePivot.x + Y_offsetFromPivot);     // Record test location of each cells's X 90 degrees counterclockwise.
-                    testCellPos.y = (int)(PiecePivot.y - X_offsetFromPivot);     // Record test location of each cells's Y 90 degrees counterclockwise.
+                    testCellPos.x = (int)(PiecePivot.x + Y_offsetFromPivot);    // Record test location of each cells's X 90 degrees counterclockwise.
+                    testCellPos.y = (int)(PiecePivot.y - X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees counterclockwise.
 
-                    if (!_moveIsAllowed(matrix, testCellPos.x, testCellPos.y))
+                    if (!MoveIsAllowed(matrix, testCellPos.x, testCellPos.y))
                         isAllowed = false;
-                }                
+                }
             }
             FillPieceCells(matrix, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
             return isAllowed;
+
         }
     }
 }
+

@@ -17,18 +17,18 @@ namespace FinalProject_CSC260_Tetris
         private double _timer;
         private double _timeAllowed;
 
-        public int Score { get; private set; } // Score and Level can be read from anywhere,
-        public int Level { get; private set; } // but can only be modified by Game Class.
-        
+        public int Score { get; private set; }      // Score and Level can be read from anywhere,
+        public int Level { get; private set; }      // but can only be modified by Game Class.
+
 
         // Default Game Constructor
         public Game()
         {
             Score = 0;                                                                  // Score and Level start at Zero.
             Level = 0;
-            
+
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
-            
+
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
             _timer = 0; // secs                                                         // game loop move timer starts at 0
             _timeAllowed = 2; // secs                                                  // game loop interval starts at 2 secs
@@ -102,22 +102,22 @@ namespace FinalProject_CSC260_Tetris
         // Display Game Board.
         public void DisplayGameBoard()   // Runs inside the window's while loop.
         {
-            for (int row = 0; row<GameSettings.Height; row++)                           // nested for loop is drawn same as terminal output.
+            for (int row = 0; row < GameSettings.Height; row++)                           // nested for loop is drawn same as terminal output.
             {
-                for (int col = 0; col<GameSettings.Width; col++)                        // but pixel math instead of ASCII characters.
+                for (int col = 0; col < GameSettings.Width; col++)                        // but pixel math instead of ASCII characters.
                 {
-                                                                                        // My Adaptation of the following Claude Snippet:
+                    // My Adaptation of the following Claude Snippet:
                     Raylib.DrawRectangle(                                               // fills each cell with the correct cell color.
                     col * GameSettings.CellSize,                                        // calculates current pos X in pixels
                     row * GameSettings.CellSize,                                        // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
-                    _toRayLibColor(TetrisGameBoard[col,row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
+                    _toRayLibColor(TetrisGameBoard[col, row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
 
-                                                                                        // This Snippet from Claude:
+                    // This Snippet from Claude:
                     Raylib.DrawRectangleLines(                                          // draws a gray rectangle around each cell.
-                    col* GameSettings.CellSize,                                         // calculates current pos X in pixels
-                    row* GameSettings.CellSize,                                         // calculates current pos Y in pixels
+                    col * GameSettings.CellSize,                                         // calculates current pos X in pixels
+                    row * GameSettings.CellSize,                                         // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
                     Color.DarkGray);                                                    // rectangle color DarkGray
@@ -125,50 +125,6 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-        // DisplayGameBoard() method. (TERMINAL OUTPUT TEST PRINT)
-        /*
-        internal void DisplayGameBoard(CellColor[,] matrix)    // Displays Current Game Matrix On Terminal
-                {
-                    Console.WriteLine("\n\n\n----------SCORE: 000000----------");
-                    Console.WriteLine("-.--.--.--.--.--.--.--.--.--.--.-");
-                    for (int i = 0; i < GameSettings.Height; i++)
-                    {
-                        Console.Write("|");
-                        for (int j = 0; j < GameSettings.Width; j++)
-                        {
-                            switch ((CellColor)matrix[j, i])
-                            {
-                                case CellColor.Empty:
-                                    Console.Write(".  ");
-                                    break;
-                                case CellColor.Cyan:
-                                    Console.Write(".CC");
-                                    break;
-                                case CellColor.Yellow:
-                                    Console.Write(".YY");
-                                    break;
-                                case CellColor.Purple:
-                                    Console.Write(".PP");
-                                    break;
-                                case CellColor.Green:
-                                    Console.Write(".GG");
-                                    break;
-                                case CellColor.Red:
-                                    Console.Write(".RR");
-                                    break;
-                                case CellColor.Blue:
-                                    Console.Write(".BB");
-                                    break;
-                                case CellColor.Orange:
-                                    Console.Write(".OO");
-                                    break;
-                            }
-                        }
-                        Console.WriteLine(".|");
-                    }
-                    Console.WriteLine("---------------------------------");
-                }
-                */
         // public void HandleUserInput()
         // take raw input from the user
         public void HandleUserInput()
@@ -179,23 +135,28 @@ namespace FinalProject_CSC260_Tetris
             switch (key)
             {
                 case KeyboardKey.Left:
-                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, Direction.Left);
+                    /*moveSucceeded =*/
+                    _currentPiece.Move(TetrisGameBoard, Direction.Left);
                     break;
 
                 case KeyboardKey.Right:
-                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, Direction.Right);
+                    /*moveSucceeded =*/
+                    _currentPiece.Move(TetrisGameBoard, Direction.Right);
                     break;
 
                 case KeyboardKey.Down:
-                    /*moveSucceeded =*/_currentPiece.Move(TetrisGameBoard, Direction.Down);
+                    /*moveSucceeded =*/
+                    _currentPiece.Move(TetrisGameBoard, Direction.Down);
                     break;
 
                 case KeyboardKey.J:
-                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
+                    /*moveSucceeded =*/
+                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
                     break;
 
                 case KeyboardKey.F:
-                    /*moveSucceeded =*/ _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
+                    /*moveSucceeded =*/
+                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
                     break;
             }
         }
@@ -206,39 +167,51 @@ namespace FinalProject_CSC260_Tetris
         {
             _timer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
-           // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
-           // {
-                bool pieceCanMoveDown = _currentPiece.CanMove(TetrisGameBoard, 0, 1);
-            
-               if (pieceCanMoveDown)                                                // If Piece has space to move below.
-               {
-                    if (_timer >= _timeAllowed)
-                    {
-                        _timer = 0;                                                 // Reset _dropTimer for next drop
-                        _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
-                    }
-                }
-                else
+            // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
+            // {
+            bool pieceCanMoveDown = _currentPiece.CanMove(TetrisGameBoard, 0, 1);
+
+            if (pieceCanMoveDown)                                                // If Piece has space to move below.
+            {
+                if (_timer >= _timeAllowed)
                 {
-                    if (_timer >= _timeAllowed)
-                    {   // "Lock-in piece." No need to actually do anything
+                    _timer = 0;                                                 // Reset _dropTimer for next drop
+                    _currentPiece.Move(TetrisGameBoard, Direction.Down);        // Move Piece Down Automatically.
+                }
+            }
+            else
+            {
+                if (_timer >= _timeAllowed)
+                {   // "Lock-in piece." No need to actually do anything
 
-                        // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
 
-                        // checkCompletedRows().
-                        // clearCompletedRows().
-                        // countRowsCleared().
-                        // addToScore()
-                        // checkForLevelUp()
-                        _spawnRandomTetromino();
-                    }
+                    // checkCompletedRows().
+                    // clearCompletedRows().
+                    // countRowsCleared().
+                    // addToScore()
+                    // checkForLevelUp()
+                    _spawnRandomTetromino();
                 }
             }
         }
-    }
-
         // private bool _rowIsCompleted(CellColor[,] matrix)
         // Check if row is completed
+        private int _rowsCompleted()
+        {
+            int rowsCompleted = 0;
+
+            for (int row = 0; row < GameSettings.Height; row++)
+            {
+                for (int col = 0; col < GameSettings.Width; col++)
+                {
+
+                    //
+                }
+            }
+
+            return rowsCompleted;
+        }
 
         // private void _clearRow(CellColor[,] matrix)
         // Clear a row. Move Blocks Above Down.
@@ -254,3 +227,5 @@ namespace FinalProject_CSC260_Tetris
 
         // private void _checkIfGameIsOver(CellColor[,] matrix)
         // end game if block locks in on the top row.
+    }
+}
