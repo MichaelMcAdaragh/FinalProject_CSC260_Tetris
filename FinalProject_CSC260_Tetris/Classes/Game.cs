@@ -128,8 +128,6 @@ namespace FinalProject_CSC260_Tetris
         public void HandleUserInput()
         {
             KeyboardKey key = (KeyboardKey)Raylib.GetKeyPressed();  // gets the key the player pressed and stores it in key variable
-            bool moved = true;  // boolean flag to track if the player made a move.
-
             switch (key)
             {
                 case KeyboardKey.Left:
@@ -151,14 +149,6 @@ namespace FinalProject_CSC260_Tetris
                 case KeyboardKey.F:
                     _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
                     break;
-
-                default:
-                    moved = false;  // player made no move
-                    break;
-            }
-            if (moved == true)
-            {
-                _moveTimer = 0;     // reset the timer if the player makes a move.
             }
         }
 
