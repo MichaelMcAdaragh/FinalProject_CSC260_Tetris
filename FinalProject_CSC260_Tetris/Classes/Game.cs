@@ -18,14 +18,18 @@ namespace FinalProject_CSC260_Tetris
         private double _timeAllowed;
 
         public int Score { get; private set; }      // Score and Level can be read from anywhere,
-        public int Level { get; private set; }      // but can only be modified by Game Class.
-
+        public int TotalRowsCleared { get; private set; }
+        public int Level
+        {
+            get { return TotalRowsCleared / 10; }   // Level is based on rows cleared. calculates every time value is needed.
+        }
+        
 
         // Default Game Constructor
         public Game()
         {
             Score = 0;                                                                  // Score and Level start at Zero.
-            Level = 0;
+            TotalRowsCleared = 0;
 
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
 
@@ -126,12 +130,19 @@ namespace FinalProject_CSC260_Tetris
             Raylib.DrawText($"Level: {Level}",
                 10 + GameSettings.CellSize,
                 10 + GameSettings.CellSize,
-                20,
+                18,
                 Color.White);
-            Raylib.DrawText($"Score: {Score}", 
-                10 + (7 * GameSettings.CellSize),
+
+            Raylib.DrawText($"Rows Cleared: {TotalRowsCleared}",
+                30 + (3 * GameSettings.CellSize),
                 10 + GameSettings.CellSize,
-                20,
+                18,
+                Color.White);
+
+            Raylib.DrawText($"Score: {Score}", 
+                10 + (8 * GameSettings.CellSize),
+                10 + GameSettings.CellSize,
+                18,
                 Color.White);
         }
 
@@ -195,10 +206,12 @@ namespace FinalProject_CSC260_Tetris
                 {   // "Lock-in piece." No need to actually do anything
 
                     // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
-                    _rowsCompleted();
+                    int rowsCompleted = _clearRowsAndReportQuantity();
+                    _addToScore(rowsCompleted);
+                    TotalRowsCleared += rowsCompleted;
                     
-                    // addToScore()
-                    // checkForLevelUp()
+                    // checkForLevelUp() !!!!!!!!
+
                     _spawnRandomTetromino();
                 }
             }
@@ -230,10 +243,10 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-// private int _rowsCompleted(CellColor[,] matrix)
-// return the number of rows completed.
-// Check if row is completed, clear completed rows, return count of completed rows.
-private int _rowsCompleted()
+        // private int _rowsCompleted(CellColor[,] matrix)
+        // return the number of rows completed.
+        // Check if row is completed, clear completed rows, return count of completed rows.
+        private int _clearRowsAndReportQuantity()
         {
             int rowsCompleted = 0;
 
@@ -259,12 +272,27 @@ private int _rowsCompleted()
             return rowsCompleted;
         }
 
-        
-
-        
-
         // private void _addToScore(int rows_completed)
         // add to score based on number of rows completed
+        private void _addToScore(int rowsCompleted)
+        {
+            switch (rowsCompleted)
+            {
+                case 1:
+                    Score += (40 * (Level + 1));    break;
+
+                case 2:
+                    Score += (100 * (Level + 1));   break;
+
+                case 3:
+                    Score += (300 * (Level + 1));   break;
+
+                case 4:
+                    Score += (1200 * (Level + 1));  break;
+
+                default: break;            
+            }
+        }
 
         // private void _checkScoreForLevelUp(int score)
         // check score and increment level if eligible.
