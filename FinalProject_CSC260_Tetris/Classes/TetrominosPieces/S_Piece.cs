@@ -10,10 +10,10 @@ namespace FinalProject_CSC260_Tetris
         public S_Piece(CellColor[,] matrix)
         {
             // set inital coordinates:
-            CellPos[0].x = 4; CellPos[0].y = 0;
-            CellPos[1].x = 5; CellPos[1].y = 0;
-            CellPos[2].x = 3; CellPos[2].y = 1;
-            CellPos[3].x = 4; CellPos[3].y = 1;
+            PiecePos[0].x = 4; PiecePos[0].y = 0;
+            PiecePos[1].x = 5; PiecePos[1].y = 0;
+            PiecePos[2].x = 3; PiecePos[2].y = 1;
+            PiecePos[3].x = 4; PiecePos[3].y = 1;
 
             // set pivot coordinates:
             PiecePivot.x = 4; PiecePivot.y = 1;
@@ -22,7 +22,7 @@ namespace FinalProject_CSC260_Tetris
             PieceColor = CellColor.Green;
 
             // activate piece cells
-            FillPieceCells(matrix, PieceColor);
+            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);
         }
     }
 }

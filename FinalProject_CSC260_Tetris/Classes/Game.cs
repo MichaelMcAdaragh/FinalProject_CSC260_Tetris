@@ -141,7 +141,7 @@ namespace FinalProject_CSC260_Tetris
                 Color.White);
 
             Raylib.DrawText($"Score: {Score}", 
-                10 + (8 * GameSettings.CellSize),
+                40 + (7 * GameSettings.CellSize),
                 10 + GameSettings.CellSize,
                 18,
                 Color.White);
@@ -204,11 +204,12 @@ namespace FinalProject_CSC260_Tetris
                 if (_timer >= _timeAllowed)
                 {   // "Lock-in piece." No need to actually do anything
 
-                    // PEFORM TETROMINO'S END OF LIFE OPERATIONS:
-                    int rowsCompleted = _clearRowsAndReportQuantity();
+                    // PEFORM TETROMINO'S END OF LIFE OPERATIONS:               // This chunck of code is where most
+                    int rowsCompleted = _clearRowsAndReportQuantity();          // of the operations occure.
                     _addToScore(rowsCompleted);
                     TotalRowsCleared += rowsCompleted;
                     _checkForSpeedUp();
+                    // _gameIsOver() !!!!!!!!!!!!!!!!!!!!!!!!!!!
                     _spawnRandomTetromino();
                 }
             }
@@ -253,7 +254,7 @@ namespace FinalProject_CSC260_Tetris
 
                 for (int col = 0; col < GameSettings.Width; col++)      // Go thru every column
                 {
-                    if (!TetrominoPiece.CellsAreEmpty(TetrisGameBoard, col, row))   // if the cells at the given point are Not Empty:
+                    if (!GameUtilities.CellsAreEmpty(TetrisGameBoard, col, row))   // if the cells at the given point are Not Empty:
                     {
                         cellsOccupied++;    // increment cells occupied.
                     }
@@ -268,10 +269,10 @@ namespace FinalProject_CSC260_Tetris
             }
             return rowsCompleted;
         }
-
+       
         // private void _addToScore(int rows_completed)
         // add to score based on number of rows completed
-        private void _addToScore(int rowsCompleted)
+        private void _addToScore(int rowsCompleted)     // Base on standard tetris rules.
         {
             switch (rowsCompleted)
             {
@@ -297,12 +298,18 @@ namespace FinalProject_CSC260_Tetris
         {
             if (Level > _highestLevel) // if a level up occured
             {
-                _timeAllowed *= Math.Pow(0.90, Level);  // decay time allowed
-                _highestLevel = Level;                  // update new high level
+                _timeAllowed *= .95;    // 5% faster per level?     alternately: /*Math.Pow(0.90, Level);*/ exponential decay
+                _highestLevel = Level;  // update new high level
+                        
+             //   Raylib.DrawText("Level Up!",
+             //  10 + (4 * GameSettings.CellSize),
+             //  10 + (6 * GameSettings.CellSize),
+             //  30,
+             //  Color.White);
             }
         }
 
         // private void _checkIfGameIsOver(CellColor[,] matrix)
-        // end game if block locks in on the top row.
+        // end game if block locks in on the top row.               !!!!!!!!
     }
 }
