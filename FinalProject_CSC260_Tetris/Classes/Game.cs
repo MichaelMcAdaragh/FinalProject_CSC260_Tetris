@@ -23,19 +23,20 @@ namespace FinalProject_CSC260_Tetris
         {
             get { return TotalRowsCleared / 10; }   // Level is based on rows cleared. calculates every time value is needed.
         }
-        
+        private int _highestLevel;   // tracks highest level year achieved.
 
         // Default Game Constructor
         public Game()
         {
             Score = 0;                                                                  // Score and Level start at Zero.
             TotalRowsCleared = 0;
+            _highestLevel = 0;
 
             TetrisGameBoard = new CellColor[GameSettings.Width, GameSettings.Height];   // Tetris Game Board is an CellColor matrix.
 
             _rng = new Random();                                                        // Instantiate pseudorandom number generator.
             _timer = 0; // secs                                                         // game loop move timer starts at 0
-            _timeAllowed = 2; // secs                                                  // game loop interval starts at 2 secs
+            _timeAllowed = 1; // secs                                                  // game loop interval starts at 2 secs
             _spawnRandomTetromino();
         }
 
@@ -188,8 +189,6 @@ namespace FinalProject_CSC260_Tetris
         {
             _timer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
-            // if (_timer >= _timeTillDrop)                             // If moveTimeAllowed elapses
-            // {
             bool pieceCanMoveDown = _currentPiece.PieceCanMove(TetrisGameBoard, 0, 1);
 
             if (pieceCanMoveDown)                                                // If Piece has space to move below.
@@ -205,13 +204,11 @@ namespace FinalProject_CSC260_Tetris
                 if (_timer >= _timeAllowed)
                 {   // "Lock-in piece." No need to actually do anything
 
-                    // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
+                    // PEFORM TETROMINO'S END OF LIFE OPERATIONS:
                     int rowsCompleted = _clearRowsAndReportQuantity();
                     _addToScore(rowsCompleted);
                     TotalRowsCleared += rowsCompleted;
-                    
-                    // checkForLevelUp() !!!!!!!!
-
+                    _checkForSpeedUp();
                     _spawnRandomTetromino();
                 }
             }
@@ -296,6 +293,14 @@ namespace FinalProject_CSC260_Tetris
 
         // private void _checkScoreForLevelUp(int score)
         // check score and increment level if eligible.
+        private void _checkForSpeedUp()
+        {
+            if (Level > _highestLevel) // if a level up occured
+            {
+                _timeAllowed *= Math.Pow(0.90, Level);  // decay time allowed
+                _highestLevel = Level;                  // update new high level
+            }
+        }
 
         // private void _checkIfGameIsOver(CellColor[,] matrix)
         // end game if block locks in on the top row.
