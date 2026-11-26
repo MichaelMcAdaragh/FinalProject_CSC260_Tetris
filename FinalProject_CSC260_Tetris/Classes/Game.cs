@@ -254,7 +254,7 @@ namespace FinalProject_CSC260_Tetris
 
                 for (int col = 0; col < GameSettings.Width; col++)      // Go thru every column
                 {
-                    if (!GameUtilities.CellsAreEmpty(TetrisGameBoard, col, row))   // if the cells at the given point are Not Empty:
+                    if (!GameUtilities.CellIsEmpty(TetrisGameBoard, col, row))   // if the cells at the given point are Not Empty:
                     {
                         cellsOccupied++;    // increment cells occupied.
                     }

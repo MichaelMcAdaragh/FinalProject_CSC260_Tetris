@@ -16,7 +16,19 @@ namespace FinalProject_CSC260_Tetris
         // PIECE MOVEMENT AND MANIPULATION //
 
         // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
-        
+        public static void FillPieceCells(CellColor[,] matrix, CellCoords[] piecePos, CellColor color)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                matrix[piecePos[i].x, piecePos[i].y] = color; // set current cells to given cell color
+            }
+        }
+
+        // protected void ClearCells(CellColor[,] matrix, CellCoords[] piece)
+        public static void ClearPieceCells(CellColor[,] matrix, CellCoords[] piece)
+        {
+            FillPieceCells(matrix, piece, CellColor.Empty);   // turn off current cells
+        }
 
         // protected void ShiftPos(Direction direction)
         // move tetromino left, right, and down. returns status of its success as a bool.
@@ -24,7 +36,7 @@ namespace FinalProject_CSC260_Tetris
         {
             if (PieceCanMove(matrix, change_x, change_y))  // Disallows illegal position shifts
             {
-                GameUtilities.ClearPieceCells(matrix, PiecePos);              // empty Current Cells 
+                ClearPieceCells(matrix, PiecePos);              // empty Current Cells 
 
                 for (int i = 0; i < 4; i++)      // for each tetramino cell
                 {
@@ -35,7 +47,7 @@ namespace FinalProject_CSC260_Tetris
                 PiecePivot.x += change_x;        // since move was allowed, update the x-y pos of pivot to reflect the new positions of the piece's cells
                 PiecePivot.y += change_y;
 
-                GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);  // fill cells In at New Position.
+                FillPieceCells(matrix, PiecePos, PieceColor);  // fill cells In at New Position.
 
                 return true;
             }
@@ -77,27 +89,27 @@ namespace FinalProject_CSC260_Tetris
                 switch (direction)
                 {
                     case RotationalDirection.Clockwise:
-                        if (PieceCanRotate(matrix, RotationalDirection.Clockwise))  // make sure rotate does not cause out of bound or collision.
+                        if (_pieceCanRotate(matrix, RotationalDirection.Clockwise))  // make sure rotate does not cause out of bound or collision.
                         {
-                            GameUtilities.ClearPieceCells(matrix, PiecePos);                            
+                            ClearPieceCells(matrix, PiecePos);                            
 
                             PiecePos[i].x = (int)(PiecePivot.x - y_pivotOffset);    // Update Location of block's X 90 degrees clockwise.
                             PiecePos[i].y = (int)(PiecePivot.y + x_pivotOffset);    // Update Location of block's Y 90 degrees clockwise.
 
-                            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);
+                            FillPieceCells(matrix, PiecePos, PieceColor);
                             rotatedSuccessfully = true;                            
                         }
                         break;
 
                     case RotationalDirection.CounterClockwise:
-                        if (direction == RotationalDirection.CounterClockwise)
+                        if (_pieceCanRotate(matrix, RotationalDirection.CounterClockwise))
                         {
-                            GameUtilities.ClearPieceCells(matrix, PiecePos);                  
+                            ClearPieceCells(matrix, PiecePos);                  
 
                             PiecePos[i].x = (int)(PiecePivot.x + y_pivotOffset);     // Update Location of block's X 90 degrees counter clockwise.
                             PiecePos[i].y = (int)(PiecePivot.y - x_pivotOffset);     // Update Location of block's Y 90 degrees counter clockwise.
 
-                            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);
+                            FillPieceCells(matrix, PiecePos, PieceColor);
                             rotatedSuccessfully = true;
                         }
                         break;
@@ -125,15 +137,15 @@ namespace FinalProject_CSC260_Tetris
 
 
 
-        // protected void Kick(CellColor[,] matrix, RotationState rotationState)
-        // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // protected void Kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
         // BOUNDS CHECKING & COLLISION //
         
         public bool PieceCanMove(CellColor[,] matrix, int change_x, int change_y)    // Used by game loop to determine between droptime and locktime.
         {
-            GameUtilities.ClearPieceCells(matrix, PiecePos);
+            ClearPieceCells(matrix, PiecePos);
 
             bool isAllowed = true;
 
@@ -142,20 +154,20 @@ namespace FinalProject_CSC260_Tetris
                 int testX = PiecePos[i].x + change_x;    // test change in x
                 int testY = PiecePos[i].y + change_y;    // test change in y
 
-                if (!GameUtilities.MoveIsAllowed(matrix, testX, testY))
+                if (!GameUtilities.CellCanMove(matrix, testX, testY))
                     isAllowed = false;       // Check if the move was allowed
             }
 
-            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);
+            FillPieceCells(matrix, PiecePos, PieceColor);
 
             return isAllowed;
         }
 
         // BOOL CANROTATE() !!!
         // Simulates a rotation and determines whether or not it was in bounds
-        public bool PieceCanRotate(CellColor[,] matrix, RotationalDirection direction)
+        private bool _pieceCanRotate(CellColor[,] matrix, RotationalDirection direction)
         {
-            GameUtilities.ClearPieceCells(matrix, PiecePos);                                            // Clear Piece From Game Board Matrix.
+            ClearPieceCells(matrix, PiecePos);                                            // Clear Piece From Game Board Matrix.
 
             bool isAllowed = true;
 
@@ -171,7 +183,7 @@ namespace FinalProject_CSC260_Tetris
                     testPiecePos.x = (int)(PiecePivot.x - Y_offsetFromPivot);    // Record test location of each cells's X 90 degrees clockwise.
                     testPiecePos.y = (int)(PiecePivot.y + X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees clockwise.
 
-                    if (!GameUtilities.MoveIsAllowed(matrix, testPiecePos.x, testPiecePos.y))  // Check if the move was allowed
+                    if (!GameUtilities.CellCanMove(matrix, testPiecePos.x, testPiecePos.y))  // Check if the move was allowed
                         isAllowed = false;
                 }
                 else if (direction == RotationalDirection.CounterClockwise)     // Flipping the signs on these two lines results in CounterClockWise rotation.
@@ -179,11 +191,11 @@ namespace FinalProject_CSC260_Tetris
                     testPiecePos.x = (int)(PiecePivot.x + Y_offsetFromPivot);    // Record test location of each cells's X 90 degrees counterclockwise.
                     testPiecePos.y = (int)(PiecePivot.y - X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees counterclockwise.
 
-                    if (!GameUtilities.MoveIsAllowed(matrix, testPiecePos.x, testPiecePos.y))
+                    if (!GameUtilities.CellCanMove(matrix, testPiecePos.x, testPiecePos.y))
                         isAllowed = false;
                 }
             }
-            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
+            FillPieceCells(matrix, PiecePos, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
             return isAllowed;
         }
     }

@@ -22,7 +22,7 @@ namespace FinalProject_CSC260_Tetris
             PieceColor = CellColor.Cyan;
 
             // activate piece cells
-            GameUtilities.FillPieceCells(matrix, PiecePos, PieceColor);
+            FillPieceCells(matrix, PiecePos, PieceColor);
         }
     }
 }
