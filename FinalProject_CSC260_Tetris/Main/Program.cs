@@ -8,7 +8,9 @@ namespace FinalProject_CSC260_Tetris.Main           // Credit Claude on the basi
     {
         static void Main(string[] args)
         {
-            Raylib.InitWindow(GameSettings.WindowWidth, GameSettings.WindowHeight, "Tetris");   // This creates the window.
+            Raylib.InitWindow(GameSettings.WindowWidth + (2 * GameSettings.CellSize),
+                GameSettings.WindowHeight + (4 * GameSettings.CellSize),
+                "Tetris");   // This creates the window. // +GameSttings.Cellsize creates an area for score and level. Next piece would be neat someday.
             Raylib.SetTargetFPS(60);                        // limits to 60 Frames per second.
 
             Game game = new Game();

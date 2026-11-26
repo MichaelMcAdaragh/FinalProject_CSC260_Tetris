@@ -108,21 +108,31 @@ namespace FinalProject_CSC260_Tetris
                 {
                     // My Adaptation of the following Claude Snippet:
                     Raylib.DrawRectangle(                                               // fills each cell with the correct cell color.
-                    col * GameSettings.CellSize,                                        // calculates current pos X in pixels
-                    row * GameSettings.CellSize,                                        // calculates current pos Y in pixels
+                    col * GameSettings.CellSize + (GameSettings.CellSize),              // calculates current pos X in pixels
+                    row * GameSettings.CellSize + (2 * GameSettings.CellSize),          // calculates current pos Y in pixels   //lower the print out
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
                     _toRayLibColor(TetrisGameBoard[col, row])); // !!!! Fills cell in with the correct cell color for its game board position. !!!!
 
                     // This Snippet from Claude:
                     Raylib.DrawRectangleLines(                                          // draws a gray rectangle around each cell.
-                    col * GameSettings.CellSize,                                         // calculates current pos X in pixels
-                    row * GameSettings.CellSize,                                         // calculates current pos Y in pixels
+                    col * GameSettings.CellSize + (GameSettings.CellSize),              // calculates current pos X in pixels
+                    row * GameSettings.CellSize + (2 * GameSettings.CellSize),          // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
                     Color.DarkGray);                                                    // rectangle color DarkGray
                 }                                                                       // This snippet makes the Game Board Cells into a Gridiron.
             }
+            Raylib.DrawText($"Level: {Level}",
+                10 + GameSettings.CellSize,
+                10 + GameSettings.CellSize,
+                20,
+                Color.White);
+            Raylib.DrawText($"Score: {Score}", 
+                10 + (7 * GameSettings.CellSize),
+                10 + GameSettings.CellSize,
+                20,
+                Color.White);
         }
 
         // public void HandleUserInput()
@@ -185,41 +195,73 @@ namespace FinalProject_CSC260_Tetris
                 {   // "Lock-in piece." No need to actually do anything
 
                     // PEFORM END OF TETROMINO'S SERVICE LIFE OPERATIONS:
-
-                    // checkCompletedRows().
-                    // clearCompletedRows().
-                    // countRowsCleared().
+                    _rowsCompleted();
+                    
                     // addToScore()
                     // checkForLevelUp()
                     _spawnRandomTetromino();
                 }
             }
         }
-        // private bool _rowIsCompleted(CellColor[,] matrix)
-        // Check if row is completed
-        private int _rowsCompleted()
+
+        // private void _lowerCells(int row)
+        // lower the cells above the given row
+        private void _lowerCells(int givenRow)
+        {
+            for (int row = givenRow - 1; row > 0; row--)    //lower every cell above the cleared row.
+            {                                               //will want to start 1 row above cleared row hence row = givenRow - 1, then work backward towards top hence row--
+                for (int col = 0; col < GameSettings.Width; col++)       // work left to right
+                {
+                    CellColor cellColor = TetrisGameBoard[col,row];      // store the cells color
+                    TetrisGameBoard[col, row] = CellColor.Empty;         // turn off the cell
+                    if(row < GameSettings.Height)
+                        TetrisGameBoard[col, row + 1] = cellColor;       // fill in the cell below it.
+                }
+            }
+        }
+
+        // private void _clearRow()
+        // Clear a row. Move Blocks Above Down.
+        private void _clearRow(int givenRow)
+        {
+            for (int col = 0; col < GameSettings.Width; col++)          // work left to right
+            {
+                TetrisGameBoard[col,givenRow] = CellColor.Empty;
+            }
+        }
+
+// private int _rowsCompleted(CellColor[,] matrix)
+// return the number of rows completed.
+// Check if row is completed, clear completed rows, return count of completed rows.
+private int _rowsCompleted()
         {
             int rowsCompleted = 0;
 
             for (int row = 0; row < GameSettings.Height; row++)         // Go thru every row
             {
+                int cellsOccupied = 0;
+
                 for (int col = 0; col < GameSettings.Width; col++)      // Go thru every column
                 {
-                    if (TetrominoPiece.CellsAreEmpty(TetrisGameBoard, col, row))
-                    { 
-                        
+                    if (!TetrominoPiece.CellsAreEmpty(TetrisGameBoard, col, row))   // if the cells at the given point are Not Empty:
+                    {
+                        cellsOccupied++;    // increment cells occupied.
                     }
                 }
-            }
 
+                if (cellsOccupied == 10)
+                {
+                    _clearRow(row);
+                    _lowerCells(row);
+                    rowsCompleted++;
+                }
+            }
             return rowsCompleted;
         }
 
-        // private void _clearRow(CellColor[,] matrix)
-        // Clear a row. Move Blocks Above Down.
+        
 
-        // private int _rowsCompleted(CellColor[,] matrix)
-        // return the number of rows completed.
+        
 
         // private void _addToScore(int rows_completed)
         // add to score based on number of rows completed
