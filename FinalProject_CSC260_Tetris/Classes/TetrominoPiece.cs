@@ -12,8 +12,7 @@ namespace FinalProject_CSC260_Tetris
         protected CellCoords[] PiecePos = new CellCoords[4]; // Array of xy int coord structs that represents each of the piece's cell positions.
         protected PivotCoords PiecePivot;  // xy double coord struct that represents the exact radial pivot of the piece's rotation.
         public CellColor PieceColor { get; protected set; }    // stores the enumerated cell color of the piece.
-
-        protected RotationState PieceRotationState = RotationState.Deg000; // store rotation state. initialized at zero degrees.
+        protected int PieceRotationState = (int)RotationState.Deg000; // store rotation state. initialized at zero degrees.
         // Kick Offset Table:
         protected CellCoords[,] KickOffsets = new CellCoords[8, 5]    // 8 Rotation states =
         // I piece is exception and will overwrite this data          // 4 Clockwise rotation states + 4 Counterclockwise rotation states.
@@ -119,13 +118,13 @@ namespace FinalProject_CSC260_Tetris
                     case RotationalDirection.Clockwise:
                         if (_pieceCanRotate(matrix, RotationalDirection.Clockwise))  // make sure rotate does not cause out of bound or collision.
                         {
-                            ClearPieceCells(matrix, PiecePos);                            
-
+                            ClearPieceCells(matrix, PiecePos);
                             PiecePos[i].X = (int)(PiecePivot.X - y_pivotOffset);    // Update Location of block's X 90 degrees clockwise.
                             PiecePos[i].Y = (int)(PiecePivot.Y + x_pivotOffset);    // Update Location of block's Y 90 degrees clockwise.
-
                             FillPieceCells(matrix, PiecePos, PieceColor);
-                            rotatedSuccessfully = true;                            
+
+                            PieceRotationState = (PieceRotationState + (int)RotationState.Deg090) % 4;   
+                            rotatedSuccessfully = true;                                                        
                         }
                         break;
 
@@ -133,18 +132,18 @@ namespace FinalProject_CSC260_Tetris
                         if (_pieceCanRotate(matrix, RotationalDirection.CounterClockwise))
                         {
                             ClearPieceCells(matrix, PiecePos);                  
-
                             PiecePos[i].X = (int)(PiecePivot.X + y_pivotOffset);     // Update Location of block's X 90 degrees counter clockwise.
                             PiecePos[i].Y = (int)(PiecePivot.Y - x_pivotOffset);     // Update Location of block's Y 90 degrees counter clockwise.
-
                             FillPieceCells(matrix, PiecePos, PieceColor);
+
+                            PieceRotationState = ((PieceRotationState + 4) - ((int)RotationState.Deg090)) % 4;       // Add 4 to Rotation state to keep rotation state positive.
                             rotatedSuccessfully = true;
                         }
                         break;
                 }                
             }
             return rotatedSuccessfully;
-        }
+        }   //RotationDegree.090 == 1. Each Piece has 4 rotation states Deg000 == 0, Deg090 == 1, Deg180 == 2, Deg270 == 3
 
         // public virtual void Move(CellColor[,] matrix, RotationalDirection rotationalDirection)
         // Rotate tetromino clockwise or counterclockwise.
@@ -184,7 +183,6 @@ namespace FinalProject_CSC260_Tetris
 
             return isAllowed;
         }
-
 
         // private bool _kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
