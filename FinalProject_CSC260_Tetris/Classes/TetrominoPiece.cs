@@ -76,7 +76,15 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-        // private void _rotateClockWise(double xOffset, yOffset)
+
+
+        // protected void Kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+        // private void _rotatedSuccessfully(CellColor[,] matrix, RotationalDirection direction)
+        // attempts to apply rotation and returns if it was successful or not.
         private bool _rotatedSuccessfully(CellColor[,] matrix, RotationalDirection direction)
         {
             bool rotatedSuccessfully = false;
@@ -134,12 +142,6 @@ namespace FinalProject_CSC260_Tetris
                     return false;
             }
         }
-
-
-
-        // protected void Kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
         // BOUNDS CHECKING & COLLISION //
         

@@ -13,7 +13,9 @@
 // Thanks to the father of Tetris(1984) for developing the Tetris game concept.
 
 // https://tetris.wiki:
-// Tetris.wiki was used to obtain Kick Offset Tables and to review Scoring Systems.
+// https://tetris.wiki/Super_Rotation_System
+// https://tetris.wiki/Scoring
+// Tetris.wiki was used to obtain Kick Offset Tables and to review Scoring Systems (I kept it simple and used BPS scoring system).
 
 // Ramon Santamaria and Raylib Community:
 // Developers of Raylib. Used for GUI and user input.
