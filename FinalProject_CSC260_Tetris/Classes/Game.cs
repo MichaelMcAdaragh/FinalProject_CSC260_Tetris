@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Raylib_cs;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Raylib_cs;
 
 namespace FinalProject_CSC260_Tetris
 {
@@ -83,23 +84,28 @@ namespace FinalProject_CSC260_Tetris
                     _currentPiece = l_piece;
                     break;
             }
+        // Tetris Guidelines:   (I currently have L & Z spawning rounded to the right in defiance of the guidelines.)
+        //All tetrominoes spawn horizontally.
+        //The I and O tetrominoes spawn centrally, and the other, 3-cell wide tetrominoes spawn rounded to the left.
+        //The J, L and T spawn flat-side first, while I, S and Z spawn in their upper horizontal orientation.
         }
+        
 
         // private Color _toRayLibColor(Cellcolor color)
         // convert from CellColor to RayLib Color.
-        private Color _toRayLibColor(CellColor color)   // This Conversion Allows abstraction between Raylib and my Underlying Logic.
+        private Raylib_cs.Color _toRayLibColor(CellColor color)   // This Conversion Allows abstraction between Raylib and my Underlying Logic.
         {
             return color switch                         // Cool switch syntax!!! outputs corresponding Color (Raylib) from CellColor inputs.
             {
-                CellColor.Empty => Color.Black,
-                CellColor.Cyan => new Color(0, 255, 255, 255),    // Custom Cyan Color
-                CellColor.Yellow => Color.Yellow,
-                CellColor.Purple => Color.Purple,
-                CellColor.Green => Color.Green,
-                CellColor.Red => Color.Red,
-                CellColor.Blue => Color.Blue,
-                CellColor.Orange => Color.Orange,
-                _ => Color.Black
+                CellColor.Empty => Raylib_cs.Color.Black,
+                CellColor.Cyan => new Raylib_cs.Color(0, 255, 255, 255),    // Custom Cyan Color
+                CellColor.Yellow => Raylib_cs.Color.Yellow,
+                CellColor.Purple => Raylib_cs.Color.Purple,
+                CellColor.Green => Raylib_cs.Color.Green,
+                CellColor.Red => Raylib_cs.Color.Red,
+                CellColor.Blue => Raylib_cs.Color.Blue,
+                CellColor.Orange => Raylib_cs.Color.Orange,
+                _ => Raylib_cs.Color.Black
             };
         }
 
@@ -125,26 +131,26 @@ namespace FinalProject_CSC260_Tetris
                     row * GameSettings.CellSize + (2 * GameSettings.CellSize),          // calculates current pos Y in pixels
                     GameSettings.CellSize,                                              // rectangle width in pixels
                     GameSettings.CellSize,                                              // rectangle height in pixels
-                    Color.DarkGray);                                                    // rectangle color DarkGray
+                    Raylib_cs.Color.DarkGray);                                                    // rectangle color DarkGray
                 }                                                                       // This snippet makes the Game Board Cells into a Gridiron.
             }
             Raylib.DrawText($"Level: {Level}",
                 10 + GameSettings.CellSize,
                 10 + GameSettings.CellSize,
                 18,
-                Color.White);
+                Raylib_cs.Color.White);
 
             Raylib.DrawText($"Rows Cleared: {TotalRowsCleared}",
                 30 + (3 * GameSettings.CellSize),
                 10 + GameSettings.CellSize,
                 18,
-                Color.White);
+                Raylib_cs.Color.White);
 
             Raylib.DrawText($"Score: {Score}", 
                 40 + (7 * GameSettings.CellSize),
                 10 + GameSettings.CellSize,
                 18,
-                Color.White);
+                Raylib_cs.Color.White);
         }
 
         // public void HandleUserInput()

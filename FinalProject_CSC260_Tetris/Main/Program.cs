@@ -38,7 +38,8 @@
 
 // Added to project via Visual Studio Community's Manage Nuget Feature. I Chose top result for raylib-cs.
 // Raylib is a free open source library that abstracts away connecting your code's logic to your hardware.
-using Raylib_cs;    // As a beginner, I found it very useful for this project as well an amateur Conway's Game of Life.
+using Raylib_cs;    // As a beginner, I found it useful for this project as well an amateur Conway's Game of Life.
+
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
