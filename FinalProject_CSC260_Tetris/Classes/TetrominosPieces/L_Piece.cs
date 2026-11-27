@@ -10,13 +10,13 @@ namespace FinalProject_CSC260_Tetris
         public L_Piece(CellColor[,] matrix)
         {
             // set inital coordinates:
-            PiecePos[0].x = 6; PiecePos[0].y = 0;
-            PiecePos[1].x = 4; PiecePos[1].y = 1;
-            PiecePos[2].x = 5; PiecePos[2].y = 1;
-            PiecePos[3].x = 6; PiecePos[3].y = 1;
+            PiecePos[0].X = 6; PiecePos[0].Y = 0;
+            PiecePos[1].X = 4; PiecePos[1].Y = 1;
+            PiecePos[2].X = 5; PiecePos[2].Y = 1;
+            PiecePos[3].X = 6; PiecePos[3].Y = 1;
 
             // set pivot coordinates:
-            PiecePivot.x = 5; PiecePivot.y = 1;
+            PiecePivot.X = 5; PiecePivot.Y = 1;
 
             // set piece color
             PieceColor = CellColor.Orange;

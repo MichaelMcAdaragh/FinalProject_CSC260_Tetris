@@ -6,7 +6,7 @@ namespace FinalProject_CSC260_Tetris
 {
     public struct PivotCoords
     {
-        public double x;
-        public double y;
+        public double X;
+        public double Y;
     }
 }
