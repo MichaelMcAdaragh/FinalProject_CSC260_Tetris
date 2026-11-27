@@ -18,7 +18,7 @@ namespace FinalProject_CSC260_Tetris.Main           // Credit Claude on the basi
             while (!Raylib.WindowShouldClose())             // while user attempt to close window == false.
             {
                 game.HandleUserInput();                     // (handles user inputs to move a piece)
-                game.GameLoopTimer(Raylib.GetFrameTime());      // GetFrameTime() is currently 1/60 of a sec (Because thats the same as 60FPS)
+                game.GameLoopTimer(Raylib.GetFrameTime());  // GetFrameTime() is currently 1/60 of a sec (Because thats the same as 60FPS)
                                                             // auto-drops piece if no move is made by end of _moveTimeAllowed
 
 

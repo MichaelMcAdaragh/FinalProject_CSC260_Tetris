@@ -6,9 +6,6 @@ namespace FinalProject_CSC260_Tetris
 {
     public static class GameUtilities
     {
-    
-
-
         // BOUNDS CHECKING & COLLISION //
 
         // private bool CellsAreInBounds(int width, int height)

@@ -300,7 +300,9 @@ namespace FinalProject_CSC260_Tetris
             {
                 _timeAllowed *= .95;    // 5% faster per level?     alternately: /*Math.Pow(0.90, Level);*/ exponential decay
                 _highestLevel = Level;  // update new high level
-                        
+                   
+             //  Would like to get some LevelUp Congrats to Display Here???
+             //  
              //   Raylib.DrawText("Level Up!",
              //  10 + (4 * GameSettings.CellSize),
              //  10 + (6 * GameSettings.CellSize),
@@ -309,7 +311,7 @@ namespace FinalProject_CSC260_Tetris
             }
         }
 
-        // private void _checkIfGameIsOver(CellColor[,] matrix)
-        // end game if block locks in on the top row.               !!!!!!!!
+        // private void _checkIfGameIsOver(CellColor[,] matrix)     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // end game if block locks in on the top row.               !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 }
