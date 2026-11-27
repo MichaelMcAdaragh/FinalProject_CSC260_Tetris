@@ -8,14 +8,15 @@ namespace FinalProject_CSC260_Tetris
     {
         InitialtoRight,
         InitialtoLeft,
-
-        RighttoInitial,
+        
         RighttoOpposite,
+        RighttoInitial,
 
-        OppositetoRight,
         OppositetoLeft,
+        OppositetoRight,
 
-        LefttoOpposite,
         LefttoInitial,
+        LefttoOpposite,
+        
     }
 }
