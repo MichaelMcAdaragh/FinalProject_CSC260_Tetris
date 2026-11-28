@@ -14,9 +14,9 @@ namespace FinalProject_CSC260_Tetris
         protected PivotCoords PiecePivot;  // xy double coord struct that represents the exact radial pivot of the piece's rotation.
         public CellColor PieceColor { get; protected set; }    // stores the enumerated cell color of the piece.
         protected int PieceRotationState = (int)RotationState.Deg000; // store rotation state. initialized at zero degrees.
-        public int MaxBottomRotationsAllowed = 15;        
+        public int MaxBottomRotationsAllowed { get; set; } = 15;        
         // Kick Offset Table:
-        protected CellCoords[,] KickOffsets = new CellCoords[8, 5]    // 8 Rotation states =
+        private static CellCoords[,] _defaultKickOffsets = new CellCoords[8, 5]    // 8 Rotation states =
         // I piece is exception and will overwrite this data          // 4 Clockwise rotation states + 4 Counterclockwise rotation states.
         
         {   // Test 1             // Test 2                // Test 3               // Test 4               // Test 5
@@ -32,6 +32,8 @@ namespace FinalProject_CSC260_Tetris
 /* L -> 2 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0, 2),   new CellCoords(-1,-2)},  // 6
 /* L -> 0 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0, 2),   new CellCoords(-1,-2)},  // 7
         };
+        // protected virtual CellCoords[,] KickOffSets => _defaultKickOffsets;
+
         // Legend from tetris.wiki/Super_Rotation_System page:
         // 0 = spawn state
         // R = state resulting from a clockwise rotation("right") from spawn
@@ -122,12 +124,11 @@ namespace FinalProject_CSC260_Tetris
                     PiecePos[i].X = (int)(PiecePivot.X - y_pivotOffset) + validKick.Value.X;    // Update Location of block's X 90 degrees clockwise.
                     PiecePos[i].Y = (int)(PiecePivot.Y + x_pivotOffset) + validKick.Value.Y;    // Update Location of block's Y 90 degrees clockwise.
                 }
-                else
+                else if (direction == RotationalDirection.CounterClockwise && validKick != null)
                 {
                     PiecePos[i].X = (int)(PiecePivot.X + y_pivotOffset) + validKick.Value.X;     // Update Location of block's X 90 degrees counter clockwise.
                     PiecePos[i].Y = (int)(PiecePivot.Y - x_pivotOffset) + validKick.Value.Y;     // Update Location of block's Y 90 degrees counter clockwise.
-                }  
-                
+                }                  
             }
             PiecePivot.X += (double)validKick.Value.X;                      // Update Pivot
             PiecePivot.Y += (double)validKick.Value.Y;
@@ -172,6 +173,8 @@ namespace FinalProject_CSC260_Tetris
 
             return isAllowed;
         }
+        
+        // KICK OFFSET / ROTATION HELPER METHODS
 
         // private bool _kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -185,31 +188,31 @@ namespace FinalProject_CSC260_Tetris
                 {
                     case (int)RotationState.Deg000:
                         if (direction == (int)RotationalDirection.Clockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.InitialtoRight, attempt];
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.InitialtoRight, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.InitialtoLeft, attempt]; break;
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.InitialtoLeft, attempt]; break;
 
                     case (int)RotationState.Deg090:
                         if (direction == RotationalDirection.Clockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.RighttoOpposite, attempt];
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.RighttoOpposite, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.RighttoInitial, attempt]; break;
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.RighttoInitial, attempt]; break;
 
                     case (int)RotationState.Deg180:
                         if (direction == RotationalDirection.Clockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.OppositetoLeft, attempt];
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.OppositetoLeft, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.OppositetoRight, attempt]; break;
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.OppositetoRight, attempt]; break;
 
                     case (int)RotationState.Deg270:
                         if (direction == RotationalDirection.Clockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.LefttoInitial, attempt];
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.LefttoInitial, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
-                            kickOffset = KickOffsets[(int)RotationAttempt.LefttoOpposite, attempt]; break;
+                            kickOffset = _defaultKickOffsets[(int)RotationAttempt.LefttoOpposite, attempt]; break;
                 }
                 return kickOffset;
             }

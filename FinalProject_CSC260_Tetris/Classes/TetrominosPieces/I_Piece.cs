@@ -23,6 +23,8 @@ namespace FinalProject_CSC260_Tetris
 
             // activate piece cells
             FillPieceCells(matrix, PiecePos, PieceColor);
+
+
         }
     }
 }
