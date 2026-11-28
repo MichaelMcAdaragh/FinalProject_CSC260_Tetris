@@ -36,7 +36,7 @@ namespace FinalProject_CSC260_Tetris
 
         // private bool MoveIsAllowed(CellColor[,] matrix, int width, int height)
         // return true or false if area piece is attempting to move to is both in inbound and empty.
-        public static bool CellCanMove(CellColor[,] matrix, int x_pos, int y_pos)
+        public static bool CellCanMoveTo(CellColor[,] matrix, int x_pos, int y_pos)
         {
             bool isAllowed = true;
 

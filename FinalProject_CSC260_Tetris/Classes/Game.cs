@@ -17,6 +17,7 @@ namespace FinalProject_CSC260_Tetris
         private Random _rng;                        // Declare variable for private Random Number Object.
         private double _timer;
         private double _timeAllowed;
+        public int MaxRotatationsAllowed { get; } = 15;
 
         public int Score { get; private set; }      // Score and Level can be read from anywhere,
         public int TotalRowsCleared { get; private set; }
@@ -157,35 +158,41 @@ namespace FinalProject_CSC260_Tetris
         // take raw input from the user
         public void HandleUserInput()
         {
-            //bool moveSucceeded = false;
+            bool moveSucceeded = false;
 
             KeyboardKey key = (KeyboardKey)Raylib.GetKeyPressed();  // gets the key the player pressed and stores it in key variable
             switch (key)
             {
                 case KeyboardKey.Left:
                     /*moveSucceeded =*/
-                    _currentPiece.Move(TetrisGameBoard, Direction.Left);
+                    moveSucceeded = _currentPiece.Move(TetrisGameBoard, Direction.Left);
                     break;
 
                 case KeyboardKey.Right:
                     /*moveSucceeded =*/
-                    _currentPiece.Move(TetrisGameBoard, Direction.Right);
+                    moveSucceeded = _currentPiece.Move(TetrisGameBoard, Direction.Right);
                     break;
 
                 case KeyboardKey.Down:
                     /*moveSucceeded =*/
-                    _currentPiece.Move(TetrisGameBoard, Direction.Down);
+                    moveSucceeded = _currentPiece.Move(TetrisGameBoard, Direction.Down);
                     break;
 
                 case KeyboardKey.J:
                     /*moveSucceeded =*/
-                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
+                    moveSucceeded = _currentPiece.Move(TetrisGameBoard, RotationalDirection.Clockwise);
                     break;
 
                 case KeyboardKey.F:
                     /*moveSucceeded =*/
-                    _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
+                    moveSucceeded = _currentPiece.Move(TetrisGameBoard, RotationalDirection.CounterClockwise);
                     break;
+            }
+            if (!_currentPiece.PieceCanMove(TetrisGameBoard, 0, 1) && moveSucceeded)        // This allow up to 15 infinity spins
+            {
+                if (_currentPiece.MaxBottomRotationsAllowed > 0)
+                _timer = 0;
+                _currentPiece.MaxBottomRotationsAllowed--;
             }
         }
 
@@ -195,9 +202,7 @@ namespace FinalProject_CSC260_Tetris
         {
             _timer += changeInTime;         // change in time between frames at 60 FPS. approx 0.01666 secs per frame.
 
-            bool pieceCanMoveDown = _currentPiece.PieceCanMove(TetrisGameBoard, 0, 1);
-
-            if (pieceCanMoveDown)                                                // If Piece has space to move below.
+            if (_currentPiece.PieceCanMove(TetrisGameBoard, 0, 1))       // If Piece has space to move below.
             {
                 if (_timer >= _timeAllowed)
                 {

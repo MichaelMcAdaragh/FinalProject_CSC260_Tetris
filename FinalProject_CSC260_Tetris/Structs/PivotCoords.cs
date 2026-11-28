@@ -8,5 +8,11 @@ namespace FinalProject_CSC260_Tetris
     {
         public double X;
         public double Y;
+
+        public PivotCoords(int x, int y)    // Added Struct Parameterized Constructor for Kick Table Offset Data Input.
+        {
+            X = x;
+            Y = y;
+        }
     }
 }

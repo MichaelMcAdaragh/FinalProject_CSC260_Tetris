@@ -14,10 +14,5 @@ namespace FinalProject_CSC260_Tetris
             X = x;
             Y = y;
         }
-        public CellCoords(CellCoords cellcoords)    // Added Struct Copy Constructor for Kick Table Offset Data Input.
-        {
-            X = cellcoords.X;
-            Y = cellcoords.Y;
-        }
     }
 }

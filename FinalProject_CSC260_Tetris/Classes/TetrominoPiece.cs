@@ -9,39 +9,39 @@ namespace FinalProject_CSC260_Tetris
     abstract class TetrominoPiece
     {
         // TetrominoPiece Fields & Properties:
+        
         protected CellCoords[] PiecePos = new CellCoords[4]; // Array of xy int coord structs that represents each of the piece's cell positions.
         protected PivotCoords PiecePivot;  // xy double coord struct that represents the exact radial pivot of the piece's rotation.
         public CellColor PieceColor { get; protected set; }    // stores the enumerated cell color of the piece.
         protected int PieceRotationState = (int)RotationState.Deg000; // store rotation state. initialized at zero degrees.
+        public int MaxBottomRotationsAllowed = 15;        
         // Kick Offset Table:
         protected CellCoords[,] KickOffsets = new CellCoords[8, 5]    // 8 Rotation states =
         // I piece is exception and will overwrite this data          // 4 Clockwise rotation states + 4 Counterclockwise rotation states.
         
-            {   // Test 1             // Test 2                // Test 3               // Test 4               // Test 5
-/* 0 -> R */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0,-2),   new CellCoords(-1,-2)},  // 0                                                                                                                     // 
-/* 0 -> L */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1, 1),  new CellCoords(0,-2),   new CellCoords( 1,-2)},  // 1
+        {   // Test 1             // Test 2                // Test 3               // Test 4               // Test 5
+/* 0 -> R */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1,-1),  new CellCoords(0,-2),   new CellCoords(-1, 2)},  // 0  // note, y coords must be inverted                                                                                                                   // 
+/* 0 -> L */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1,-1),  new CellCoords(0,-2),   new CellCoords( 1, 2)},  // 1
 
-/* R -> 0 */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1,-1),  new CellCoords(0, 2),   new CellCoords( 1, 2)},  // 2
-/* R -> 2 */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1,-1),  new CellCoords(0, 2),   new CellCoords( 1, 2)},  // 3
+/* R -> 0 */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1, 1),  new CellCoords(0, 2),   new CellCoords( 1,-2)},  // 2
+/* R -> 2 */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1, 1),  new CellCoords(0, 2),   new CellCoords( 1,-2)},  // 3
                                                                                                                       // 
-/* 2 -> R */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0,-2),   new CellCoords(-1,-2)},  // 4
-/* 2 -> L */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1, 1),  new CellCoords(0,-2),   new CellCoords( 1,-2)},  // 5                
+/* 2 -> R */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1,-1),  new CellCoords(0,-2),   new CellCoords(-1, 2)},  // 4
+/* 2 -> L */   {new CellCoords(0,0),  new CellCoords( 1, 0),   new CellCoords( 1,-1),  new CellCoords(0,-2),   new CellCoords( 1, 2)},  // 5                
   
-/* L -> 2 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1,-1),  new CellCoords(0, 2),   new CellCoords(-1, 2)},  // 6
-/* L -> 0 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1,-1),  new CellCoords(0, 2),   new CellCoords(-1, 2)},  // 7
-     
+/* L -> 2 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0, 2),   new CellCoords(-1,-2)},  // 6
+/* L -> 0 */   {new CellCoords(0,0),  new CellCoords(-1, 0),   new CellCoords(-1, 1),  new CellCoords(0, 2),   new CellCoords(-1,-2)},  // 7
+        };
+        // Legend from tetris.wiki/Super_Rotation_System page:
+        // 0 = spawn state
+        // R = state resulting from a clockwise rotation("right") from spawn
+        // L = state resulting from a counter - clockwise("left") rotation from spawn
+        // 2 = state resulting from 2 successive rotations in either direction from spawn.
 
-            };
-// Legend from tetris.wiki/Super_Rotation_System page:
-// 0 = spawn state
-// R = state resulting from a clockwise rotation("right") from spawn
-// L = state resulting from a counter - clockwise("left") rotation from spawn
-// 2 = state resulting from 2 successive rotations in either direction from spawn.
+        // TetrominoPiece METHODS:
+        // PIECE MOVEMENT AND MANIPULATION //
 
-            // TetrominoPiece METHODS:
-            // PIECE MOVEMENT AND MANIPULATION //
-
-            // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
+        // protected void FillCells(CellColor[,] matrix, Cell Coords[] piece)
         public static void FillPieceCells(CellColor[,] matrix, CellCoords[] piecePos, CellColor color)
         {
             for (int i = 0; i < 4; i++)
@@ -106,64 +106,53 @@ namespace FinalProject_CSC260_Tetris
         // attempts to apply rotation and returns if it was successful or not.
         private bool _rotatedSuccessfully(CellColor[,] matrix, RotationalDirection direction)
         {
-            bool rotatedSuccessfully = false;
+            CellCoords? validKick = _validKick(matrix, direction);
+            if (validKick == null)
+                return false;
+
+            ClearPieceCells(matrix, PiecePos);
 
             for (int i = 0; i < 4; i++)
             {
                 double x_pivotOffset = PiecePos[i].X - PiecePivot.X;    // find individual cell's X offset from Pivot.
                 double y_pivotOffset = PiecePos[i].Y - PiecePivot.Y;    // find individual cell's Y offset from Pivot.
-                
-                switch (direction)
+
+                if (direction == RotationalDirection.Clockwise && validKick != null)
                 {
-                    case RotationalDirection.Clockwise:
-                        if (_pieceCanRotate(matrix, RotationalDirection.Clockwise))  // make sure rotate does not cause out of bound or collision.
-                        {
-                            ClearPieceCells(matrix, PiecePos);
-                            PiecePos[i].X = (int)(PiecePivot.X - y_pivotOffset);    // Update Location of block's X 90 degrees clockwise.
-                            PiecePos[i].Y = (int)(PiecePivot.Y + x_pivotOffset);    // Update Location of block's Y 90 degrees clockwise.
-                            FillPieceCells(matrix, PiecePos, PieceColor);
-
-                            PieceRotationState = (PieceRotationState + (int)RotationState.Deg090) % 4;   
-                            rotatedSuccessfully = true;                                                        
-                        }
-                        break;
-
-                    case RotationalDirection.CounterClockwise:
-                        if (_pieceCanRotate(matrix, RotationalDirection.CounterClockwise))
-                        {
-                            ClearPieceCells(matrix, PiecePos);                  
-                            PiecePos[i].X = (int)(PiecePivot.X + y_pivotOffset);     // Update Location of block's X 90 degrees counter clockwise.
-                            PiecePos[i].Y = (int)(PiecePivot.Y - x_pivotOffset);     // Update Location of block's Y 90 degrees counter clockwise.
-                            FillPieceCells(matrix, PiecePos, PieceColor);
-
-                            PieceRotationState = ((PieceRotationState + 4) - ((int)RotationState.Deg090)) % 4;       // Add 4 to Rotation state to keep rotation state positive.
-                            rotatedSuccessfully = true;
-                        }
-                        break;
-                }                
+                    PiecePos[i].X = (int)(PiecePivot.X - y_pivotOffset) + validKick.Value.X;    // Update Location of block's X 90 degrees clockwise.
+                    PiecePos[i].Y = (int)(PiecePivot.Y + x_pivotOffset) + validKick.Value.Y;    // Update Location of block's Y 90 degrees clockwise.
+                }
+                else
+                {
+                    PiecePos[i].X = (int)(PiecePivot.X + y_pivotOffset) + validKick.Value.X;     // Update Location of block's X 90 degrees counter clockwise.
+                    PiecePos[i].Y = (int)(PiecePivot.Y - x_pivotOffset) + validKick.Value.Y;     // Update Location of block's Y 90 degrees counter clockwise.
+                }  
+                
             }
-            return rotatedSuccessfully;
+            PiecePivot.X += (double)validKick.Value.X;                      // Update Pivot
+            PiecePivot.Y += (double)validKick.Value.Y;
+
+            if (direction == RotationalDirection.Clockwise)
+                PieceRotationState = (PieceRotationState + (int)RotationState.Deg090) % 4;
+            else
+                PieceRotationState = (PieceRotationState + 4 - (int)RotationState.Deg090) % 4;
+
+            FillPieceCells(matrix, PiecePos, PieceColor);
+            return true;
         }   //RotationDegree.090 == 1. Each Piece has 4 rotation states Deg000 == 0, Deg090 == 1, Deg180 == 2, Deg270 == 3
 
         // public virtual void Move(CellColor[,] matrix, RotationalDirection rotationalDirection)
         // Rotate tetromino clockwise or counterclockwise.
         public bool Move(CellColor[,] matrix, RotationalDirection direction)
         {
-            switch (direction)                                       // NEED TO DRAW OUT BY HAND!!!
-            {
-                case RotationalDirection.Clockwise:
-                    return _rotatedSuccessfully(matrix, RotationalDirection.Clockwise);
-
-                case RotationalDirection.CounterClockwise:
-                    return _rotatedSuccessfully(matrix, RotationalDirection.CounterClockwise);
-
-                default:
-                    return false;
-            }
+            if (direction == RotationalDirection.Clockwise)                                       // NEED TO DRAW OUT BY HAND!!!
+                return _rotatedSuccessfully(matrix, RotationalDirection.Clockwise);
+            else
+                return _rotatedSuccessfully(matrix, RotationalDirection.CounterClockwise);
         }
 
         // BOUNDS CHECKING & COLLISION //
-        
+
         public bool PieceCanMove(CellColor[,] matrix, int change_x, int change_y)    // Used by game loop to determine between droptime and locktime.
         {
             ClearPieceCells(matrix, PiecePos);
@@ -175,7 +164,7 @@ namespace FinalProject_CSC260_Tetris
                 int testX = PiecePos[i].X + change_x;    // test change in x
                 int testY = PiecePos[i].Y + change_y;    // test change in y
 
-                if (!GameUtilities.CellCanMove(matrix, testX, testY))
+                if (!GameUtilities.CellCanMoveTo(matrix, testX, testY))
                     isAllowed = false;       // Check if the move was allowed
             }
 
@@ -186,36 +175,36 @@ namespace FinalProject_CSC260_Tetris
 
         // private bool _kick(CellColor[,] matrix, RotationState rotationState) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // implement kick table offsets. (Possible a challenging goal.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        private CellCoords? _kickOffset(RotationState rotationState, RotationalDirection direction, int attempt)
+        private CellCoords? _fromKickOffsetMatrix(RotationalDirection direction, int attempt)
         {
             CellCoords? kickOffset = new CellCoords();      // Had to use question mark to make nullable
 
             if (attempt < 5)
             {
-                switch (rotationState)
+                switch (PieceRotationState)
                 {
-                    case RotationState.Deg000:
-                        if (direction == RotationalDirection.Clockwise)
+                    case (int)RotationState.Deg000:
+                        if (direction == (int)RotationalDirection.Clockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.InitialtoRight, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.InitialtoLeft, attempt]; break;
 
-                    case RotationState.Deg090:
+                    case (int)RotationState.Deg090:
                         if (direction == RotationalDirection.Clockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.RighttoOpposite, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.RighttoInitial, attempt]; break;
 
-                    case RotationState.Deg180:
+                    case (int)RotationState.Deg180:
                         if (direction == RotationalDirection.Clockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.OppositetoLeft, attempt];
 
                         else if (direction == RotationalDirection.CounterClockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.OppositetoRight, attempt]; break;
 
-                    case RotationState.Deg270:
+                    case (int)RotationState.Deg270:
                         if (direction == RotationalDirection.Clockwise)
                             kickOffset = KickOffsets[(int)RotationAttempt.LefttoInitial, attempt];
 
@@ -226,43 +215,71 @@ namespace FinalProject_CSC260_Tetris
             }
             else
                 kickOffset = null;
-                return kickOffset;
+            return kickOffset;
         }
 
-        // BOOL CANROTATE() !!!
-        // Simulates a rotation and determines whether or not it was in bounds
-        private bool _pieceCanRotate(CellColor[,] matrix, RotationalDirection direction)
-        {
-            ClearPieceCells(matrix, PiecePos);                                            // Clear Piece From Game Board Matrix.
+        // _validKick()
+        // returns a valid rotation &/ KickOffset, null if no valid rotation/offsets
+        private CellCoords? _validKick(CellColor[,] matrix, RotationalDirection direction)
+        {  
+            CellCoords testPiecePos;                 // xy struct to store test coordinates
+            CellCoords? validKick = null;            // if still null after method, then no valid kick. this is returned.
 
-            bool isAllowed = true;
+            ClearPieceCells(matrix, PiecePos);       // Clear Piece From Game Board Matrix.            
 
-            for (int i = 0; i < 4; i++)
+            int attempts = 0;
+            bool? succeeded = false;
+            while (attempts < 5 && succeeded == false)
             {
-                CellCoords testPiecePos; // test coordinates
+                int timesSucceeded = 4;                                             // starts at 4, if any are deducted, test fails.
 
-                double X_offsetFromPivot = PiecePos[i].X - PiecePivot.X;         // find blocks's X offset from Pivot.
-                double Y_offsetFromPivot = PiecePos[i].Y - PiecePivot.Y;         // find block's Y offset from Pivot.
+                CellCoords? kickOffset = _fromKickOffsetMatrix(direction , attempts);
 
-                if (direction == RotationalDirection.Clockwise)
-                {
-                    testPiecePos.X = (int)(PiecePivot.X - Y_offsetFromPivot);    // Record test location of each cells's .X 90 degrees clockwise.
-                    testPiecePos.Y = (int)(PiecePivot.Y + X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees clockwise.
+                for (int i = 0; i < 4; i++)
+                {                                                           
+                    double X_offsetFromPivot = PiecePos[i].X - PiecePivot.X;         // find blocks's X offset from Pivot.
+                    double Y_offsetFromPivot = PiecePos[i].Y - PiecePivot.Y;         // find block's Y offset from Pivot.
 
-                    if (!GameUtilities.CellCanMove(matrix, testPiecePos.X, testPiecePos.Y))  // Check if the move was allowed
-                        isAllowed = false;
+                    if (direction == RotationalDirection.Clockwise)
+                    {
+                        testPiecePos.X = (int)(PiecePivot.X - Y_offsetFromPivot);    // Record test location of each cells's .X 90 degrees clockwise.
+                        testPiecePos.Y = (int)(PiecePivot.Y + X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees clockwise.
+
+                        
+                        if (kickOffset != null)
+                        {
+                            testPiecePos.X += kickOffset.Value.X;    // .Value has to come directly after nullable wrapper
+                            testPiecePos.Y += kickOffset.Value.Y;    // Apply KickOffset to Test Position
+                        }
+                        if (!GameUtilities.CellCanMoveTo(matrix, testPiecePos.X, testPiecePos.Y))  // Check if the move was allowed
+                            timesSucceeded--;
+                    }
+                    else if (direction == RotationalDirection.CounterClockwise)     // Flipping the signs on these two lines results in CounterClockWise rotation.
+                    {
+                        testPiecePos.X = (int)(PiecePivot.X + Y_offsetFromPivot);    // Record test location of each cells's .X 90 degrees counterclockwise.
+                        testPiecePos.Y = (int)(PiecePivot.Y - X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees counterclockwise.
+
+                        if (kickOffset != null)
+                        {
+                            testPiecePos.X += kickOffset.Value.X;    // Apply KickOffset To Test Position
+                            testPiecePos.Y += kickOffset.Value.Y;
+                        }
+                        if (!GameUtilities.CellCanMoveTo(matrix, testPiecePos.X, testPiecePos.Y))
+                            timesSucceeded--;
+                    }
                 }
-                else if (direction == RotationalDirection.CounterClockwise)     // Flipping the signs on these two lines results in CounterClockWise rotation.
+                if (timesSucceeded < 4)
+                    succeeded = false;
+                else
                 {
-                    testPiecePos.X = (int)(PiecePivot.X + Y_offsetFromPivot);    // Record test location of each cells's .X 90 degrees counterclockwise.
-                    testPiecePos.Y = (int)(PiecePivot.Y - X_offsetFromPivot);    // Record test location of each cells's Y 90 degrees counterclockwise.
-
-                    if (!GameUtilities.CellCanMove(matrix, testPiecePos.X, testPiecePos.Y))
-                        isAllowed = false;
+                    succeeded = true;
+                    validKick = kickOffset;
                 }
+
+                attempts++;
             }
             FillPieceCells(matrix, PiecePos, PieceColor);                // "Draw" Piece's New Location On Game Board Matrix.
-            return isAllowed;
+            return validKick;
         }
     }
 }
